@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
   Printer, 
@@ -15,24 +15,44 @@ import {
   Check, 
   Calendar, 
   CreditCard,
-  Package
+  Package,
+  SquarePen
 } from 'lucide-react';
 import { AdminOrder, OrderStatus } from '../../types';
 import { OrderStatusBadge } from './OrderStatusBadge';
+import { OrderEditModal } from './OrderEditModal';
+import { updateOrder } from '../../services/orderService';
 
 interface OrderDetailsProps {
   order: AdminOrder;
   onBack: () => void;
   onUpdateStatus: (orderId: string, newStatus: OrderStatus) => void;
+  onOrderUpdated?: (updatedOrder: AdminOrder) => void;
 }
 
 export const OrderDetails: React.FC<OrderDetailsProps> = ({
-  order,
+  order: initialOrder,
   onBack,
   onUpdateStatus,
+  onOrderUpdated,
 }) => {
+  const [order, setOrder] = useState<AdminOrder>(initialOrder);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+
+  useEffect(() => {
+    setOrder(initialOrder);
+  }, [initialOrder]);
+
+  const handleSaveEditedOrder = (updated: AdminOrder) => {
+    const saved = updateOrder(updated.id, updated);
+    if (saved) {
+      setOrder(saved);
+      onOrderUpdated?.(saved);
+      setIsEditModalOpen(false);
+    }
+  };
 
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard?.writeText(text);
@@ -102,10 +122,21 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({
             <span>অর্ডার তালিকায় ফিরুন (Back to Orders)</span>
           </button>
           
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <h1 className="font-display font-black text-2xl text-stone-900 tracking-tight flex items-center gap-2">
               <span className="font-mono text-emerald-900 whitespace-nowrap">{order.id}</span>
             </h1>
+
+            {/* Edit button in top Order ID section */}
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold transition-all border border-emerald-200/90 cursor-pointer shadow-2xs hover:shadow-xs"
+              title="অর্ডার এডিট করুন (Edit Order)"
+            >
+              <SquarePen className="w-3.5 h-3.5 text-emerald-700" />
+              <span>এডিট (Edit Order)</span>
+            </button>
+
             <OrderStatusBadge status={order.status} size="md" showBengali={true} />
             <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-stone-100 text-stone-700 whitespace-nowrap">
               {order.orderSource || 'Website Order'}
@@ -120,6 +151,14 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({
 
         {/* Quick Top Actions */}
         <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            className="px-3.5 py-2 bg-[#15803d] hover:bg-[#166534] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm whitespace-nowrap"
+          >
+            <SquarePen className="w-3.5 h-3.5" />
+            <span>অর্ডার এডিট করুন (Edit Order)</span>
+          </button>
+
           <a
             href={`tel:${getCleanPhone(order.customerPhone)}`}
             className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs whitespace-nowrap"
@@ -240,9 +279,18 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({
                   মোট {items.reduce((acc, i) => acc + i.quantity, 0)} টি পণ্য
                 </p>
               </div>
-              <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg whitespace-nowrap">
-                {items.length} {items.length > 1 ? 'items' : 'item'}
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-lg flex items-center gap-1 transition-colors cursor-pointer border border-emerald-200"
+                >
+                  <SquarePen className="w-3.5 h-3.5" />
+                  <span>পণ্য পরিবর্তন</span>
+                </button>
+                <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg whitespace-nowrap">
+                  {items.length} {items.length > 1 ? 'items' : 'item'}
+                </span>
+              </div>
             </div>
 
             <div className="overflow-x-auto no-scrollbar">
@@ -371,9 +419,18 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({
               <h3 className="font-display font-bold text-sm text-stone-900">
                 গ্রাহক বিবরণ (Customer)
               </h3>
-              <span className="text-[10px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded font-bold whitespace-nowrap">
-                {order.orderSource || 'Regular'}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="text-[11px] font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-0.5 cursor-pointer px-1.5 py-0.5 rounded hover:bg-emerald-50 transition-colors"
+                >
+                  <SquarePen className="w-3 h-3" />
+                  <span>এডিট</span>
+                </button>
+                <span className="text-[10px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded font-bold whitespace-nowrap">
+                  {order.orderSource || 'Regular'}
+                </span>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -694,6 +751,14 @@ export const OrderDetails: React.FC<OrderDetailsProps> = ({
           </div>
         </div>
       )}
+
+      {/* Edit Order Modal */}
+      <OrderEditModal
+        isOpen={isEditModalOpen}
+        order={order}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveEditedOrder}
+      />
     </div>
   );
 };

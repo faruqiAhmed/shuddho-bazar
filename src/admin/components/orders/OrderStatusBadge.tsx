@@ -55,6 +55,13 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
           icon: <Truck className={`${iconSizes[size]} text-blue-600`} />,
           labelBengali: 'শিপ্ড',
         };
+      case 'Out for Delivery':
+        return {
+          bg: 'bg-indigo-50 text-indigo-800 border border-indigo-200/90',
+          dot: 'bg-indigo-500',
+          icon: <Truck className={`${iconSizes[size]} text-indigo-600`} />,
+          labelBengali: 'ডেলিভারিতে',
+        };
       case 'Confirmed':
         return {
           bg: 'bg-teal-50 text-teal-800 border border-teal-200/90',

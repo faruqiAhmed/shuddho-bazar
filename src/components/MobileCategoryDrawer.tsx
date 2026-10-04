@@ -13,25 +13,34 @@ import {
   Droplet,
   Wheat,
   Flame,
-  Sun
+  Sun,
+  User,
+  LogIn
 } from 'lucide-react';
+import { CustomerUser } from '../types';
 
 interface MobileCategoryDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   selectedCategory: string;
+  currentUser: CustomerUser | null;
   onSelectCategory: (categoryId: string) => void;
   onOpenTrackOrder: () => void;
   onOpenWishlist: () => void;
+  onOpenAuth: () => void;
+  onOpenProfile: () => void;
 }
 
 export const MobileCategoryDrawer: React.FC<MobileCategoryDrawerProps> = ({
   isOpen,
   onClose,
   selectedCategory,
+  currentUser,
   onSelectCategory,
   onOpenTrackOrder,
   onOpenWishlist,
+  onOpenAuth,
+  onOpenProfile,
 }) => {
   if (!isOpen) return null;
 
@@ -86,6 +95,49 @@ export const MobileCategoryDrawer: React.FC<MobileCategoryDrawerProps> = ({
           >
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* User Account / Login Bar in Drawer */}
+        <div className="p-3 bg-stone-50 border-b border-stone-200">
+          {currentUser ? (
+            <button
+              onClick={() => {
+                onClose();
+                onOpenProfile();
+              }}
+              className="w-full flex items-center justify-between p-2 rounded-xl bg-white border border-stone-200 hover:border-emerald-500 transition-colors cursor-pointer text-left"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <img
+                  src={currentUser.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'}
+                  alt={currentUser.name}
+                  className="w-9 h-9 rounded-full object-cover border border-emerald-600/40 shrink-0"
+                />
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-stone-900 truncate">{currentUser.name}</p>
+                  <p className="text-[10px] text-emerald-800 font-medium">+880 {currentUser.phone}</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                onClose();
+                onOpenAuth();
+              }}
+              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <LogIn className="w-4 h-4 text-amber-300" />
+                <div className="text-left">
+                  <p className="text-xs font-bold">লগইন / নতুন একাউন্ট</p>
+                  <p className="text-[10px] text-emerald-200">মোবাইল ওটিপিতে তাৎক্ষণিক লগইন</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-emerald-200" />
+            </button>
+          )}
         </div>
 
         {/* Purity Banner Pill */}

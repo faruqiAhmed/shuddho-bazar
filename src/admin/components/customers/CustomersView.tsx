@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import { Users, Phone, Mail, MapPin, Search } from 'lucide-react';
 import { ADMIN_CUSTOMERS } from '../../data/adminMockData';
+import { AdminPagination } from '../common/AdminPagination';
 
 export const CustomersView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = ADMIN_CUSTOMERS.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.phone.includes(searchQuery) ||
     c.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedCustomers = filtered.slice(startIndex, startIndex + pageSize);
 
   return (
     <div className="space-y-5">
@@ -37,7 +43,10 @@ export const CustomersView: React.FC = () => {
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Search by name, phone or address..."
             className="w-full pl-9 pr-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 focus:outline-none focus:ring-1 focus:ring-emerald-700"
           />
@@ -58,7 +67,7 @@ export const CustomersView: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
-              {filtered.map((c) => (
+              {paginatedCustomers.map((c) => (
                 <tr key={c.id} className="hover:bg-stone-50/70 transition-colors">
                   <td className="py-3 font-bold text-stone-900">
                     {c.name}
@@ -101,6 +110,16 @@ export const CustomersView: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        <AdminPagination
+          currentPage={currentPage}
+          totalItems={filtered.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+          itemLabel="গ্রাহক"
+        />
       </div>
     </div>
   );

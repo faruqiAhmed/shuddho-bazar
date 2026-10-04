@@ -23,7 +23,7 @@ export interface AdminStat {
 
 export type OrderPaymentMethod = 'bKash' | 'Cash on Delivery' | 'Nagad' | 'Card' | 'Rocket';
 
-export type OrderStatus = 'Delivered' | 'Processing' | 'Shipped' | 'Cancelled' | 'Confirmed' | 'Pending';
+export type OrderStatus = 'Delivered' | 'Processing' | 'Shipped' | 'Out for Delivery' | 'Cancelled' | 'Confirmed' | 'Pending';
 
 export interface AdminOrderItem {
   id?: string;

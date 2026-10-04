@@ -1,7 +1,7 @@
-import React from 'react';
-import { Eye, Phone, MapPin, Truck, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Eye, Phone, MapPin, Trash2 } from 'lucide-react';
 import { AdminOrder, OrderStatus } from '../../types';
-import { OrderStatusBadge } from './OrderStatusBadge';
+import { AdminPagination } from '../common/AdminPagination';
 
 interface OrderTableProps {
   orders: AdminOrder[];
@@ -10,6 +10,7 @@ interface OrderTableProps {
   onSelectAll: (selected: boolean) => void;
   onViewOrder: (order: AdminOrder) => void;
   onQuickUpdateStatus: (orderId: string, status: OrderStatus) => void;
+  onDeleteOrder?: (orderId: string) => void;
   onCreateNewOrder?: () => void;
 }
 
@@ -20,8 +21,20 @@ export const OrderTable: React.FC<OrderTableProps> = ({
   onSelectAll,
   onViewOrder,
   onQuickUpdateStatus,
+  onDeleteOrder,
   onCreateNewOrder,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Reset to page 1 if orders list or filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [orders.length]);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedOrders = orders.slice(startIndex, startIndex + pageSize);
+
   const isAllSelected = orders.length > 0 && selectedOrders.length === orders.length;
 
   const renderPaymentBadge = (method: AdminOrder['paymentMethod'], status?: AdminOrder['paymentStatus']) => {
@@ -88,15 +101,18 @@ export const OrderTable: React.FC<OrderTableProps> = ({
             <th className="py-3.5 px-4 min-w-[180px]">Items</th>
             <th className="py-3.5 px-4 min-w-[130px]">Amount</th>
             <th className="py-3.5 px-4 min-w-[130px]">Payment</th>
-            <th className="py-3.5 px-4 min-w-[130px]">Status</th>
-            <th className="py-3.5 px-4 min-w-[170px]">Date & Courier</th>
-            <th className="py-3.5 px-4 min-w-[170px] text-right">Actions</th>
+            <th className="py-3.5 px-4 min-w-[170px] font-bold text-slate-400 uppercase tracking-widest text-[11px]">
+              QUICK STATUS
+            </th>
+            <th className="py-3.5 px-4 min-w-[110px] text-center font-bold text-slate-400 uppercase tracking-widest text-[11px]">
+              ACTIONS
+            </th>
           </tr>
         </thead>
 
         {/* Table Body with generous cell padding */}
         <tbody className="divide-y divide-stone-100">
-          {orders.map((order) => {
+          {paginatedOrders.map((order) => {
             const isSelected = selectedOrders.includes(order.id);
             return (
               <tr
@@ -115,7 +131,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                   />
                 </td>
 
-                {/* Order ID */}
+                {/* Order ID & Date */}
                 <td className="py-4 px-4 align-middle">
                   <button
                     onClick={() => onViewOrder(order)}
@@ -123,11 +139,10 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                   >
                     {order.id}
                   </button>
-                  {order.orderSource && (
-                    <span className="text-[10px] text-stone-400 block mt-1 font-sans whitespace-nowrap">
-                      via {order.orderSource}
-                    </span>
-                  )}
+                  <div className="text-[11px] text-stone-400 mt-1 flex items-center gap-1.5 whitespace-nowrap">
+                    <span>{order.date}</span>
+                    {order.orderSource && <span>• via {order.orderSource}</span>}
+                  </div>
                 </td>
 
                 {/* Customer Details */}
@@ -194,44 +209,40 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                   {renderPaymentBadge(order.paymentMethod, order.paymentStatus)}
                 </td>
 
-                {/* Status */}
+                {/* Quick Status */}
                 <td className="py-4 px-4 align-middle whitespace-nowrap">
-                  <OrderStatusBadge status={order.status} size="sm" />
-                </td>
-
-                {/* Date & Courier */}
-                <td className="py-4 px-4 align-middle whitespace-nowrap text-stone-600 text-xs">
-                  <div className="font-medium text-stone-700">{order.date}</div>
-                  <div className="text-[11px] text-emerald-800 font-bold mt-0.5 flex items-center gap-1">
-                    <Truck className="w-3 h-3 text-emerald-600 shrink-0" />
-                    <span>{order.deliveryRider || order.courierName || 'In-House'}</span>
-                  </div>
+                  <select
+                    value={order.status}
+                    onChange={(e) => onQuickUpdateStatus(order.id, e.target.value as OrderStatus)}
+                    className="w-full max-w-[155px] py-1.5 px-3 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold rounded-xl border border-stone-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-700 shadow-2xs transition-colors"
+                  >
+                    <option value="Processing">Processing</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
                 </td>
 
                 {/* Actions */}
-                <td className="py-4 px-4 align-middle text-right whitespace-nowrap">
-                  <div className="flex items-center justify-end gap-2">
+                <td className="py-4 px-4 align-middle text-center whitespace-nowrap">
+                  <div className="flex items-center justify-center gap-3.5">
                     <button
                       onClick={() => onViewOrder(order)}
-                      className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-emerald-200 cursor-pointer shadow-2xs whitespace-nowrap"
-                      title="View Order Details"
+                      className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                      title="অর্ডারের বিবরণ দেখুন (View Details)"
                     >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>বিস্তারিত</span>
+                      <Eye className="w-4 h-4" strokeWidth={1.8} />
                     </button>
 
-                    {/* Quick status dropdown */}
-                    <select
-                      value={order.status}
-                      onChange={(e) => onQuickUpdateStatus(order.id, e.target.value as OrderStatus)}
-                      className="px-2.5 py-1.5 bg-stone-50 hover:bg-stone-100 text-stone-700 rounded-xl text-xs font-semibold border border-stone-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-700 whitespace-nowrap"
+                    <button
+                      onClick={() => onDeleteOrder?.(order.id)}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                      title="অর্ডার ডিলিট করুন (Delete Order)"
                     >
-                      <option value="Processing">Processing</option>
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Shipped">Shipped</option>
-                      <option value="Delivered">Delivered</option>
-                      <option value="Cancelled">Cancelled</option>
-                    </select>
+                      <Trash2 className="w-4 h-4" strokeWidth={1.8} />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -239,6 +250,16 @@ export const OrderTable: React.FC<OrderTableProps> = ({
           })}
         </tbody>
       </table>
+
+      {/* Pagination Controls */}
+      <AdminPagination
+        currentPage={currentPage}
+        totalItems={orders.length}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+        itemLabel="অর্ডার"
+      />
     </div>
   );
 };

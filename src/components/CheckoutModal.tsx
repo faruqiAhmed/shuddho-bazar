@@ -13,7 +13,7 @@ import {
   CreditCard,
   Banknote
 } from 'lucide-react';
-import { CartItem, Order } from '../types';
+import { CartItem, Order, CustomerUser } from '../types';
 import { formatBdt } from './BdtPrice';
 
 interface CheckoutModalProps {
@@ -21,6 +21,8 @@ interface CheckoutModalProps {
   onClose: () => void;
   items: CartItem[];
   discountAmount: number;
+  currentUser?: CustomerUser | null;
+  onOpenAuth?: () => void;
   onOrderSuccess: (order: Order) => void;
   onClearCart: () => void;
 }
@@ -30,19 +32,31 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onClose,
   items,
   discountAmount,
+  currentUser,
+  onOpenAuth,
   onOrderSuccess,
   onClearCart,
 }) => {
-  const [customerName, setCustomerName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [cityArea, setCityArea] = useState<'Inside City' | 'Outside City'>('Inside City');
+  const [customerName, setCustomerName] = useState(currentUser?.name || '');
+  const [phone, setPhone] = useState(currentUser?.phone || '');
+  const [address, setAddress] = useState(currentUser?.address || '');
+  const [cityArea, setCityArea] = useState<'Inside City' | 'Outside City'>(currentUser?.cityArea || 'Inside City');
   const [deliveryNote, setDeliveryNote] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'Cash on Delivery' | 'bKash / Mobile Banking' | 'Credit / Debit Card'>('Cash on Delivery');
   
   const [completedOrder, setCompletedOrder] = useState<Order | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<{ name?: string; phone?: string; address?: string }>({});
+
+  // Sync when user logs in or modal opens
+  React.useEffect(() => {
+    if (currentUser) {
+      if (currentUser.name) setCustomerName(currentUser.name);
+      if (currentUser.phone) setPhone(currentUser.phone);
+      if (currentUser.address) setAddress(currentUser.address);
+      if (currentUser.cityArea) setCityArea(currentUser.cityArea);
+    }
+  }, [currentUser, isOpen]);
 
   if (!isOpen) return null;
 
@@ -225,6 +239,37 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   ))}
                 </div>
               </div>
+
+              {/* User Login / Profile Auto-fill Banner */}
+              {currentUser ? (
+                <div className="bg-emerald-50 border border-emerald-200/90 rounded-xl p-2.5 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <img 
+                      src={currentUser.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'} 
+                      alt={currentUser.name} 
+                      className="w-6 h-6 rounded-full object-cover border border-emerald-600/40 shrink-0" 
+                    />
+                    <div className="truncate">
+                      <span className="text-emerald-950 font-bold">{currentUser.name}</span>
+                      <span className="text-emerald-700 ml-1.5 font-medium text-[11px]">(+880 {currentUser.phone})</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold bg-emerald-700 text-white px-2 py-0.5 rounded-full shrink-0">
+                    লগইন আছেন ✓
+                  </span>
+                </div>
+              ) : onOpenAuth ? (
+                <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-2.5 flex items-center justify-between text-xs text-amber-950">
+                  <span className="text-[11px]">আগের ঠিকানা দিয়ে দ্রুত অর্ডার করতে চান?</span>
+                  <button
+                    type="button"
+                    onClick={onOpenAuth}
+                    className="font-bold text-emerald-800 hover:text-emerald-950 hover:underline cursor-pointer flex items-center gap-1 shrink-0"
+                  >
+                    <span>ওটিপিতে লগইন করুন</span>
+                  </button>
+                </div>
+              ) : null}
 
               {/* Customer Name */}
               <div>

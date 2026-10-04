@@ -8,16 +8,44 @@ interface OrderTrackingModalProps {
   isOpen: boolean;
   onClose: () => void;
   recentOrders: Order[];
+  initialTrackingId?: string;
 }
 
 export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   isOpen,
   onClose,
   recentOrders,
+  initialTrackingId,
 }) => {
-  const [trackingId, setTrackingId] = useState('SB-9241');
-  const [trackedResult, setTrackedResult] = useState<any>(SAMPLE_ORDERS['SB-9241']);
+  const [trackingId, setTrackingId] = useState(initialTrackingId || 'SB-9241');
+  const [trackedResult, setTrackedResult] = useState<any>(
+    initialTrackingId 
+      ? (recentOrders.find(o => o.id === initialTrackingId) || SAMPLE_ORDERS['SB-9241'])
+      : SAMPLE_ORDERS['SB-9241']
+  );
   const [hasSearched, setHasSearched] = useState(true);
+
+  React.useEffect(() => {
+    if (initialTrackingId) {
+      setTrackingId(initialTrackingId);
+      const matchedRecent = recentOrders.find(o => o.id.toUpperCase() === initialTrackingId.toUpperCase());
+      if (matchedRecent) {
+        setTrackedResult({
+          status: matchedRecent.status,
+          date: matchedRecent.date,
+          items: matchedRecent.items.map(i => `${i.product.bengaliName} (${i.quantity})`).join(', '),
+          total: matchedRecent.total,
+          steps: [
+            { name: 'Order Confirmed', time: 'Just now', completed: true },
+            { name: 'Purity Checked & Glass Packed', time: 'In progress', completed: true, current: true },
+            { name: 'Handed to Fast Courier', time: 'Pending', completed: false },
+            { name: 'Out for Express Delivery', time: 'Pending', completed: false },
+            { name: 'Delivered to Doorstep', time: 'Pending', completed: false },
+          ]
+        });
+      }
+    }
+  }, [initialTrackingId, recentOrders]);
 
   if (!isOpen) return null;
 

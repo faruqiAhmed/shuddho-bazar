@@ -12,6 +12,7 @@ import { AdminOrder, OrderStatus } from '../../types';
 import { 
   getOrders, 
   updateOrderStatus, 
+  deleteOrder,
 } from '../../services/orderService';
 import { OrderTable } from './OrderTable';
 import { OrderDetails } from './OrderDetails';
@@ -62,6 +63,20 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         setSelectedOrder(updated);
       }
       showToast(`অর্ডার ${orderId} এর স্ট্যাটাস '${newStatus}' এ পরিবর্তন করা হয়েছে`);
+    }
+  };
+
+  const handleDeleteOrder = (orderId: string) => {
+    if (window.confirm(`আপনি কি নিশ্চিতভাবে ${orderId} নম্বর অর্ডারটি ডিলিট করতে চান?`)) {
+      const ok = deleteOrder(orderId);
+      if (ok) {
+        setOrders(getOrders());
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(null);
+          setViewMode('list');
+        }
+        showToast(`অর্ডার ${orderId} সফলভাবে মুছে ফেলা হয়েছে`);
+      }
     }
   };
 
@@ -170,6 +185,11 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
           onClearInitialOrder?.();
         }}
         onUpdateStatus={handleUpdateStatus}
+        onOrderUpdated={(updated) => {
+          setOrders(getOrders());
+          setSelectedOrder(updated);
+          showToast(`অর্ডার ${updated.id} সফলভাবে আপডেট করা হয়েছে!`);
+        }}
       />
     );
   }
@@ -378,6 +398,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
             setViewMode('details');
           }}
           onQuickUpdateStatus={handleUpdateStatus}
+          onDeleteOrder={handleDeleteOrder}
           onCreateNewOrder={() => setViewMode('create')}
         />
       </div>

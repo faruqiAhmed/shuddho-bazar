@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, 
   Check, 
@@ -60,6 +60,31 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
     product?.image || PRESET_IMAGES[0].url
   );
   const [badge, setBadge] = useState(product?.badge || '100% Pure');
+  
+  // Image file upload & import
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importSuccessMsg, setImportSuccessMsg] = useState<string | null>(null);
+
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('ছবির সাইজ সর্বোচ্চ ৫ মেগাবাইট হতে পারবে');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setImage(event.target.result as string);
+        setImportSuccessMsg(`"${file.name}" সফলভাবে ইমপোর্ট হয়েছে!`);
+        setTimeout(() => setImportSuccessMsg(null), 3500);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
   
   // Weight variants
   const [weightOptions, setWeightOptions] = useState<{ weight: string; price: number; originalPrice?: number }[]>(
@@ -391,30 +416,89 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
 
           {/* Section 4: Product Image & Presets */}
           <div className="space-y-3">
-            <h4 className="font-bold text-stone-900 uppercase text-[11px] tracking-wider flex items-center gap-1.5 border-b border-stone-100 pb-2">
-              <ImageIcon className="w-3.5 h-3.5 text-emerald-700" />
-              <span>পণ্যের ছবি (Product Image)</span>
-            </h4>
+            <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+              <h4 className="font-bold text-stone-900 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
+                <ImageIcon className="w-3.5 h-3.5 text-emerald-700" />
+                <span>পণ্যের ছবি (Product Image)</span>
+              </h4>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-xs font-bold border border-emerald-200 transition-all cursor-pointer shadow-2xs"
+                title="ডিভাইস থেকে সরাসরি ছবি আপলোড বা ইমপোর্ট করুন"
+              >
+                <Upload className="w-3.5 h-3.5 text-emerald-700" />
+                <span>ছবি ইমপোর্ট করুন (Import Image)</span>
+              </button>
+            </div>
 
             <div className="flex flex-col sm:flex-row items-start gap-4">
-              <img
-                src={image}
-                alt="Product Preview"
-                className="w-20 h-20 rounded-2xl object-cover border-2 border-emerald-600 bg-stone-100 shadow-sm shrink-0"
-              />
+              {/* Clickable Image Preview with Hover Overlay */}
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="relative group cursor-pointer w-24 h-24 rounded-2xl overflow-hidden border-2 border-emerald-600 bg-stone-100 shadow-sm shrink-0"
+                title="ক্লিক করে কম্পিউটার বা মোবাইল থেকে ছবি পরিবর্তন করুন"
+              >
+                <img
+                  src={image}
+                  alt="Product Preview"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+                <div className="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[10px] font-bold transition-opacity">
+                  <Upload className="w-4 h-4 mb-0.5 text-emerald-300" />
+                  <span>ছবি পরিবর্তন</span>
+                </div>
+              </div>
 
-              <div className="flex-1 space-y-2 w-full">
+              <div className="flex-1 space-y-2.5 w-full">
                 <div>
-                  <label className="block font-bold text-stone-700 mb-1">
-                    ছবি URL (Image Link)
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-stone-700 text-xs">
+                      ছবি URL (Image Link)
+                    </label>
+                    <span className="text-[10px] text-stone-400">
+                      ওয়েব লিঙ্ক দিন অথবা সরাসরি ফাইল আপলোড করুন
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="url"
+                      value={image}
+                      onChange={(e) => setImage(e.target.value)}
+                      placeholder="https://... অথবা পাশের বাটনে ক্লিক করে ফাইল ইমপোর্ট করুন"
+                      className="flex-1 px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-mono text-[11px] focus:outline-none focus:ring-1 focus:ring-emerald-700"
+                    />
+
+                    {/* Import Image Button right next to the URL input */}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3.5 py-2 bg-[#15803d] hover:bg-[#166534] text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs whitespace-nowrap shrink-0 hover:shadow-xs"
+                      title="কম্পিউটার বা ফোন থেকে ছবি আপলোড/ইমপোর্ট করুন"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>ইমপোর্ট (Import Image)</span>
+                    </button>
+                  </div>
+
+                  {/* Hidden File Input */}
                   <input
-                    type="url"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-mono text-[11px] focus:outline-none focus:ring-1 focus:ring-emerald-700"
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageFileUpload}
                   />
+
+                  {/* Import Success Notification */}
+                  {importSuccessMsg && (
+                    <div className="mt-1.5 p-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-[11px] font-bold flex items-center gap-1.5 animate-in fade-in">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>{importSuccessMsg}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Preset quick buttons */}

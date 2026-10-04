@@ -44,6 +44,12 @@ import {
   WishlistModal 
 } from './components/WishlistModal';
 import { 
+  AuthModal 
+} from './components/AuthModal';
+import { 
+  UserProfilePage 
+} from './components/UserProfilePage';
+import { 
   PurityPromiseSection 
 } from './components/PurityPromiseSection';
 import { 
@@ -55,7 +61,8 @@ import {
 import { AdminDashboard } from './admin/AdminDashboard';
 
 import { PRODUCTS, CATEGORIES } from './data/mockData';
-import { Product, CartItem, WeightOption, Order } from './types';
+import { Product, CartItem, WeightOption, Order, CustomerUser } from './types';
+import { getCurrentUser, logoutUser, updateProfile } from './services/authService';
 import { 
   Filter, 
   ArrowUpDown, 
@@ -70,8 +77,13 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // View mode: 'admin' (default as requested) or 'store'
-  const [viewMode, setViewMode] = useState<'admin' | 'store'>('admin');
+  // View mode: 'store' by default, or 'admin', or 'profile' (dedicated profile page)
+  const [viewMode, setViewMode] = useState<'admin' | 'store' | 'profile'>('store');
+
+  // Customer Authentication state
+  const [currentUser, setCurrentUser] = useState<CustomerUser | null>(() => getCurrentUser());
+  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const [selectedTrackOrderId, setSelectedTrackOrderId] = useState<string>('DF-10086');
 
   // Category & Filter state
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -265,6 +277,31 @@ export default function App() {
 
   const handleOrderSuccess = (order: Order) => {
     setRecentOrders(prev => [order, ...prev]);
+    if (currentUser) {
+      const updatedUser = updateProfile(currentUser.id, {
+        totalOrders: (currentUser.totalOrders || 0) + 1,
+        loyaltyPoints: (currentUser.loyaltyPoints || 0) + Math.round(order.total / 10),
+      });
+      if (updatedUser) {
+        setCurrentUser(updatedUser);
+      }
+    }
+  };
+
+  const handleLoginSuccess = (user: CustomerUser) => {
+    setCurrentUser(user);
+    showToast(`স্বাগতম, ${user.name}!`);
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    setCurrentUser(null);
+    showToast('সফলভাবে লগআউট হয়েছে');
+  };
+
+  const handleTrackOrderFromProfile = (orderId: string) => {
+    setSelectedTrackOrderId(orderId);
+    setIsOrderTrackingOpen(true);
   };
 
   const handleClearCart = () => {
@@ -302,6 +339,37 @@ export default function App() {
     return <AdminDashboard onSwitchToStore={() => setViewMode('store')} />;
   }
 
+  if (viewMode === 'profile' && currentUser) {
+    return (
+      <>
+        <UserProfilePage
+          user={currentUser}
+          onBackToStore={() => setViewMode('store')}
+          onOpenAdmin={() => setViewMode('admin')}
+          onLogout={() => {
+            handleLogout();
+            setViewMode('store');
+          }}
+          onLiveTrack={(trackId) => {
+            setSelectedTrackOrderId(trackId);
+            setIsOrderTrackingOpen(true);
+          }}
+          onReorder={(order) => {
+            showToast(`${order.id} অর্ডারের পণ্যগুলো কার্টে যোগ করা হয়েছে!`);
+            setViewMode('store');
+            setIsCartOpen(true);
+          }}
+        />
+        <OrderTrackingModal
+          isOpen={isOrderTrackingOpen}
+          onClose={() => setIsOrderTrackingOpen(false)}
+          recentOrders={recentOrders}
+          initialTrackingId={selectedTrackOrderId}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#1c241b] flex flex-col font-sans pb-16 lg:pb-0">
       {/* Toast Notification Alert */}
@@ -316,8 +384,11 @@ export default function App() {
       <Header
         cartCount={totalCartCount}
         wishlistCount={wishlist.length}
+        currentUser={currentUser}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenWishlist={() => setIsWishlistOpen(true)}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenProfile={() => setViewMode('profile')}
         onOpenMenu={() => setIsCategoryDrawerOpen(true)}
         onOpenTrackOrder={() => setIsOrderTrackingOpen(true)}
         searchQuery={searchQuery}
@@ -474,18 +545,18 @@ export default function App() {
 
       {/* Mobile Sticky Bottom Navigation (Intuitive Mobile Experience) */}
       <MobileBottomNav
-        currentTab="home"
+        currentTab={selectedCategory === 'all' ? 'home' : 'categories'}
         cartCount={totalCartCount}
         wishlistCount={wishlist.length}
-        onSelectTab={() => setSelectedCategory('all')}
+        currentUser={currentUser}
+        onSelectTab={(tab) => {
+          if (tab === 'home') setSelectedCategory('all');
+        }}
         onOpenCategories={() => setIsCategoryDrawerOpen(true)}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenWishlist={() => setIsWishlistOpen(true)}
-        onFocusSearch={() => {
-          const el = document.getElementById('main-search-input');
-          el?.focus();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenProfile={() => setViewMode('profile')}
       />
 
       {/* Floating Admin Switcher Button (Bottom Left) */}
@@ -515,9 +586,12 @@ export default function App() {
         isOpen={isCategoryDrawerOpen}
         onClose={() => setIsCategoryDrawerOpen(false)}
         selectedCategory={selectedCategory}
+        currentUser={currentUser}
         onSelectCategory={(id) => setSelectedCategory(id)}
         onOpenTrackOrder={() => setIsOrderTrackingOpen(true)}
         onOpenWishlist={() => setIsWishlistOpen(true)}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenProfile={() => setViewMode('profile')}
       />
 
       <ProductQuickViewModal
@@ -547,6 +621,8 @@ export default function App() {
         onClose={() => setIsCheckoutOpen(false)}
         items={cart}
         discountAmount={discountAmount}
+        currentUser={currentUser}
+        onOpenAuth={() => setIsAuthOpen(true)}
         onOrderSuccess={handleOrderSuccess}
         onClearCart={handleClearCart}
       />
@@ -555,6 +631,7 @@ export default function App() {
         isOpen={isOrderTrackingOpen}
         onClose={() => setIsOrderTrackingOpen(false)}
         recentOrders={recentOrders}
+        initialTrackingId={selectedTrackOrderId}
       />
 
       <WishlistModal
@@ -565,6 +642,13 @@ export default function App() {
         onToggleWishlist={handleToggleWishlist}
         onQuickOrder={(p, w) => handleQuickOrder(p, w)}
         onAddToCart={(p, w) => handleAddToCart(p, w)}
+      />
+
+      {/* Phone OTP Login & Verification Modal */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onSuccess={handleLoginSuccess}
       />
     </div>
   );

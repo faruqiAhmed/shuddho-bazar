@@ -1,25 +1,30 @@
 import React from 'react';
-import { Home, LayoutGrid, Search, Heart, ShoppingBag } from 'lucide-react';
+import { Home, LayoutGrid, Heart, ShoppingBag, User } from 'lucide-react';
+import { CustomerUser } from '../types';
 
 interface MobileBottomNavProps {
   currentTab: string;
   cartCount: number;
   wishlistCount: number;
+  currentUser: CustomerUser | null;
   onSelectTab: (tab: string) => void;
   onOpenCategories: () => void;
   onOpenCart: () => void;
   onOpenWishlist: () => void;
-  onFocusSearch: () => void;
+  onOpenAuth: () => void;
+  onOpenProfile: () => void;
 }
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   cartCount,
   wishlistCount,
+  currentUser,
   onSelectTab,
   onOpenCategories,
   onOpenCart,
   onOpenWishlist,
-  onFocusSearch,
+  onOpenAuth,
+  onOpenProfile,
 }) => {
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 py-1.5 px-2 shadow-lg">
@@ -45,13 +50,26 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <span className="text-[10px] font-semibold mt-0.5">ক্যাটাগরি</span>
         </button>
 
-        {/* Search */}
+        {/* Account / Login */}
         <button
-          onClick={onFocusSearch}
+          onClick={currentUser ? onOpenProfile : onOpenAuth}
           className="flex flex-col items-center justify-center flex-1 py-1 text-stone-600 hover:text-emerald-800 transition-colors cursor-pointer"
         >
-          <Search className="w-5 h-5" />
-          <span className="text-[10px] font-semibold mt-0.5">অনুসন্ধান</span>
+          {currentUser ? (
+            <div className="relative">
+              <img 
+                src={currentUser.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'} 
+                alt={currentUser.name} 
+                className="w-5 h-5 rounded-full object-cover border border-emerald-600"
+              />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full ring-1 ring-white" />
+            </div>
+          ) : (
+            <User className="w-5 h-5 text-stone-600" />
+          )}
+          <span className="text-[10px] font-semibold mt-0.5">
+            {currentUser ? 'প্রোফাইল' : 'লগইন'}
+          </span>
         </button>
 
         {/* Wishlist */}

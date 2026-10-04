@@ -82,3 +82,35 @@ export interface Review {
   avatar?: string;
   productName?: string;
 }
+
+export interface SavedAddress {
+  id: string;
+  title: string; // 'বাসা (Home)', 'অফিস (Office)'
+  name: string;
+  phone: string;
+  address: string;
+  cityArea: 'Inside City' | 'Outside City';
+  isDefault: boolean;
+}
+
+export interface CustomerUser {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  cityArea?: 'Inside City' | 'Outside City';
+  totalOrders?: number;
+  loyaltyPoints?: number;
+  joinedDate?: string;
+  avatar?: string;
+  savedAddresses?: SavedAddress[];
+}
+
+
+export interface AuthSession {
+  user: CustomerUser;
+  token: string;
+  loginTime: string;
+}
+

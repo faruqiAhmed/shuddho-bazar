@@ -19,6 +19,7 @@ import {
 } from '../../services/productService';
 import { ProductEditModal } from './ProductEditModal';
 import { ProductDetails } from './ProductDetails';
+import { AdminPagination } from '../common/AdminPagination';
 
 export const ProductsView: React.FC = () => {
   const [products, setProducts] = useState<AdminProduct[]>(() => getProducts());
@@ -28,6 +29,10 @@ export const ProductsView: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'in_stock' | 'low_stock' | 'out_of_stock'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -137,6 +142,9 @@ export const ProductsView: React.FC = () => {
       p.category.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesStatus && matchesQuery;
   });
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + pageSize);
 
   // Inventory stats
   const totalStockCount = products.reduce((acc, p) => acc + p.stock, 0);
@@ -328,7 +336,7 @@ export const ProductsView: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((p) => {
+                paginatedProducts.map((p) => {
                   const profit = p.price - p.costPrice;
                   const margin = p.price > 0 ? Math.round((profit / p.price) * 100) : 0;
                   return (
@@ -460,6 +468,16 @@ export const ProductsView: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        <AdminPagination
+          currentPage={currentPage}
+          totalItems={filteredProducts.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+          itemLabel="পণ্য"
+        />
       </div>
 
       {/* Product Edit / Add Modal */}
