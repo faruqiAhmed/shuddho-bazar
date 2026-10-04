@@ -1,0 +1,6 @@
+{
+  "name": "Shuddho Bazar - Pure & Natural Pantry",
+  "description": "Premium pure organic pantry food e-commerce inspired by Ghorer Bazar with clean mobile-first category navigation, raw forest honey, cold-pressed oils, organic ghee, nuts, and natural wellness groceries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
