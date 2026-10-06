@@ -1,8 +1,32 @@
 import React from 'react';
 import { ShoppingBag, Users, Package, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { AdminStat } from '../../types';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 export const StatCard: React.FC<{ stat: AdminStat }> = ({ stat }) => {
+  const { tr, formatNumber } = useAdminLanguage();
+
+  const getTranslatedTitle = (title: string) => {
+    switch (title) {
+      case 'Total Sales': return tr('মোট বিক্রয়', 'Total Sales');
+      case 'Total Orders': return tr('মোট অর্ডার', 'Total Orders');
+      case 'Total Customers': return tr('মোট গ্রাহক', 'Total Customers');
+      case 'Total Products': return tr('মোট পণ্য সংখ্যা', 'Total Products');
+      default: return title;
+    }
+  };
+
+  const getTranslatedPeriod = (period: string) => {
+    if (period.includes('last 7 days')) {
+      return tr('বিগত ৭ দিনের তুলনায়', 'vs. last 7 days');
+    }
+    return period;
+  };
+
+  const getTranslatedValue = (val: string) => {
+    return formatNumber(val);
+  };
+
   const getIconConfig = (type: AdminStat['iconType']) => {
     switch (type) {
       case 'sales':
@@ -63,10 +87,10 @@ export const StatCard: React.FC<{ stat: AdminStat }> = ({ stat }) => {
       {/* Metric Middle */}
       <div className="mt-3">
         <span className="text-xs font-semibold text-stone-500 block">
-          {stat.title}
+          {getTranslatedTitle(stat.title)}
         </span>
         <h3 className="font-display font-black text-2xl sm:text-3xl text-stone-900 mt-1 tracking-tight">
-          {stat.value}
+          {getTranslatedValue(stat.value)}
         </h3>
       </div>
 
@@ -82,7 +106,7 @@ export const StatCard: React.FC<{ stat: AdminStat }> = ({ stat }) => {
             <span>{stat.change}</span>
           </span>
           <span className="text-[11px] text-stone-400 font-medium">
-            {stat.comparisonPeriod}
+            {getTranslatedPeriod(stat.comparisonPeriod)}
           </span>
         </div>
 

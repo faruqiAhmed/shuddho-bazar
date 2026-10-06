@@ -1,12 +1,25 @@
 import React from 'react';
 import { PieChart as PieIcon } from 'lucide-react';
 import { ORDER_STATUS_DISTRIBUTION } from '../../data/adminMockData';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 export const OrderStatusChart: React.FC = () => {
+  const { tr, formatNumber } = useAdminLanguage();
   const total = 482;
   const radius = 64;
   const strokeWidth = 18;
   const circumference = 2 * Math.PI * radius;
+
+  const getStatusName = (name: string) => {
+    switch (name) {
+      case 'Delivered': return tr('ডেলিভার্ড', 'Delivered');
+      case 'Processing': return tr('প্রসেসিং', 'Processing');
+      case 'Shipped': return tr('শিপ্ড', 'Shipped');
+      case 'Cancelled': return tr('বাতিল', 'Cancelled');
+      case 'Pending': return tr('পেন্ডিং', 'Pending');
+      default: return name;
+    }
+  };
 
   // Compute stroke offsets for each segment
   let accumulatedPercent = 0;
@@ -30,10 +43,10 @@ export const OrderStatusChart: React.FC = () => {
         </div>
         <div>
           <h3 className="font-display font-extrabold text-base text-stone-900 leading-tight">
-            Order Status
+            {tr('অর্ডার স্ট্যাটাস', 'Order Status')}
           </h3>
           <p className="text-xs text-stone-400 mt-0.5">
-            Order distribution by status
+            {tr('স্ট্যাটাস অনুযায়ী অর্ডার বণ্টন', 'Order distribution by status')}
           </p>
         </div>
       </div>
@@ -74,10 +87,10 @@ export const OrderStatusChart: React.FC = () => {
           {/* Center Info Text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
             <span className="font-display font-black text-2xl text-stone-900 leading-none">
-              {total}
+              {formatNumber(total)}
             </span>
             <span className="text-[11px] font-semibold text-stone-400 mt-1">
-              Total Orders
+              {tr('মোট অর্ডার', 'Total Orders')}
             </span>
           </div>
         </div>
@@ -92,13 +105,13 @@ export const OrderStatusChart: React.FC = () => {
                   style={{ backgroundColor: item.color }}
                 />
                 <span className="font-semibold text-stone-700">
-                  {item.name}
+                  {getStatusName(item.name)}
                 </span>
               </div>
               <div className="flex items-center gap-3 text-stone-500 font-medium">
-                <span className="text-stone-400 text-[11px]">{item.percentage}%</span>
-                <span className="font-bold text-stone-900 w-8 text-right">
-                  {item.count}
+                <span className="text-stone-400 text-[11px] font-mono">{formatNumber(item.percentage)}%</span>
+                <span className="font-bold text-stone-900 w-8 text-right font-mono">
+                  {formatNumber(item.count)}
                 </span>
               </div>
             </div>

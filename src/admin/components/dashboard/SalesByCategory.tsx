@@ -1,12 +1,26 @@
 import React from 'react';
 import { Layers } from 'lucide-react';
 import { CATEGORY_SALES_DATA } from '../../data/adminMockData';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 interface SalesByCategoryProps {
   onViewAll?: () => void;
 }
 
 export const SalesByCategory: React.FC<SalesByCategoryProps> = ({ onViewAll }) => {
+  const { tr, formatPrice, isBn } = useAdminLanguage();
+
+  const getCategoryName = (name: string) => {
+    switch (name) {
+      case 'Raw Honey': return tr('খাঁটি মধু (Honey)', 'Raw Honey');
+      case 'Cold-Pressed Oils': return tr('ঘানির খাঁটি তেল (Oils)', 'Cold-Pressed Oils');
+      case 'Pure Deshi Ghee': return tr('গাওয়া ঘি (Ghee)', 'Pure Deshi Ghee');
+      case 'Dry Fruits & Nuts': return tr('ড্রাই ফ্রুটস ও বাদাম (Nuts)', 'Dry Fruits & Nuts');
+      case 'Organic Seeds': return tr('অর্গানিক বীজ (Seeds)', 'Organic Seeds');
+      default: return name;
+    }
+  };
+
   return (
     <div className="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-2xs flex flex-col justify-between">
       {/* Header */}
@@ -17,10 +31,10 @@ export const SalesByCategory: React.FC<SalesByCategoryProps> = ({ onViewAll }) =
           </div>
           <div>
             <h3 className="font-display font-extrabold text-base text-stone-900 leading-tight">
-              Sales by Category
+              {tr('ক্যাটাগরি ভিত্তিক বিক্রয়', 'Sales by Category')}
             </h3>
             <p className="text-xs text-stone-400 mt-0.5">
-              Top performing categories
+              {tr('শীর্ষ বিক্রিত ক্যাটাগরিসমূহ', 'Top performing categories')}
             </p>
           </div>
         </div>
@@ -30,7 +44,7 @@ export const SalesByCategory: React.FC<SalesByCategoryProps> = ({ onViewAll }) =
             onClick={onViewAll}
             className="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer"
           >
-            View All
+            {tr('সব দেখুন', 'View All')}
           </button>
         )}
       </div>
@@ -48,10 +62,10 @@ export const SalesByCategory: React.FC<SalesByCategoryProps> = ({ onViewAll }) =
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="font-bold text-stone-800 truncate">
-                  {cat.name}
+                  {getCategoryName(cat.name)}
                 </span>
-                <span className="font-black text-stone-900 ml-2">
-                  ৳ {cat.amount.toLocaleString('en-IN')}
+                <span className="font-black text-stone-900 ml-2 font-mono">
+                  {formatPrice(cat.amount)}
                 </span>
               </div>
 

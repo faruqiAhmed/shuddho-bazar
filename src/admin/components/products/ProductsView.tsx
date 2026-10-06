@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
@@ -15,14 +15,24 @@ import {
   getProducts, 
   updateProduct, 
   createProduct, 
-  deleteProduct 
+  deleteProduct,
+  subscribeToProducts
 } from '../../services/productService';
 import { ProductEditModal } from './ProductEditModal';
 import { ProductDetails } from './ProductDetails';
 import { AdminPagination } from '../common/AdminPagination';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 export const ProductsView: React.FC = () => {
+  const { tr, formatNumber, formatPrice, isBn } = useAdminLanguage();
   const [products, setProducts] = useState<AdminProduct[]>(() => getProducts());
+
+  useEffect(() => {
+    const unsub = subscribeToProducts(() => {
+      setProducts(getProducts());
+    });
+    return unsub;
+  }, []);
   const [viewMode, setViewMode] = useState<'list' | 'details'>('list');
   const [selectedProduct, setSelectedProduct] = useState<AdminProduct | null>(null);
 
@@ -166,14 +176,17 @@ export const ProductsView: React.FC = () => {
         <div>
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="font-display font-black text-xl sm:text-2xl text-stone-900 leading-tight">
-              পণ্য ব্যবস্থাপনা ও ক্যাটালগ (Products)
+              {tr('পণ্য ব্যবস্থাপনা ও ক্যাটালগ (Products)', 'Products Management & Catalog')}
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap">
-              {products.length} Products
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap font-mono">
+              {formatNumber(products.length)} {tr('টি পণ্য', 'Products')}
             </span>
           </div>
           <p className="text-xs text-stone-500 mt-1 max-w-xl leading-relaxed">
-            শুদ্ধ বাজারের খাঁটি মধু, তেল, ঘি ও ড্রাই ফ্রুটসের বিবরণ দেখুন, দাম ও স্টক সম্পাদনা করুন।
+            {tr(
+              'শুদ্ধ বাজারের খাঁটি মধু, তেল, ঘি ও ড্রাই ফ্রুটসের বিবরণ দেখুন, দাম ও স্টক সম্পাদনা করুন।',
+              'Manage natural honey, cold-pressed oils, ghee, dry fruits, pricing and inventory stock.'
+            )}
           </p>
         </div>
 
@@ -182,7 +195,7 @@ export const ProductsView: React.FC = () => {
           className="px-4 py-2.5 bg-[#15803d] hover:bg-[#166534] text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm hover:shadow cursor-pointer whitespace-nowrap"
         >
           <Plus className="w-4 h-4" />
-          <span>নতুন পণ্য যোগ করুন (Add Product)</span>
+          <span>{tr('নতুন পণ্য যোগ করুন (Add Product)', 'Add New Product')}</span>
         </button>
       </div>
 
@@ -191,13 +204,13 @@ export const ProductsView: React.FC = () => {
         <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-stone-400 block uppercase tracking-wider whitespace-nowrap">
-              মোট পণ্য
+              {tr('মোট পণ্য সংখ্যা', 'Total Products')}
             </span>
-            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block">
-              {products.length}
+            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block font-mono">
+              {formatNumber(products.length)}
             </span>
-            <span className="text-[11px] text-stone-500 font-medium block mt-0.5 whitespace-nowrap">
-              {totalStockCount} একক স্টক
+            <span className="text-[11px] text-stone-500 font-medium block mt-0.5 whitespace-nowrap font-mono">
+              {formatNumber(totalStockCount)} {tr('একক স্টক', 'units in stock')}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-600 font-bold text-lg">
@@ -208,13 +221,13 @@ export const ProductsView: React.FC = () => {
         <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-emerald-700 block uppercase tracking-wider whitespace-nowrap">
-              পর্যাপ্ত স্টক (In Stock)
+              {tr('পর্যাপ্ত স্টক (In Stock)', 'In Stock')}
             </span>
-            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block">
-              {products.filter((p) => p.stock >= 10).length}
+            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block font-mono">
+              {formatNumber(products.filter((p) => p.stock >= 10).length)}
             </span>
             <span className="text-[11px] text-emerald-700 font-bold block mt-0.5 whitespace-nowrap">
-              বিক্রয়ের জন্য প্রস্তুত
+              {tr('বিক্রয়ের জন্য প্রস্তুত', 'Ready for sale')}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold">
@@ -225,13 +238,13 @@ export const ProductsView: React.FC = () => {
         <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-amber-600 block uppercase tracking-wider whitespace-nowrap">
-              সীমিত স্টক (Low Stock)
+              {tr('সীমিত স্টক (Low Stock)', 'Low Stock Warning')}
             </span>
-            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block">
-              {lowStockCount}
+            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block font-mono">
+              {formatNumber(lowStockCount)}
             </span>
             <span className="text-[11px] text-amber-700 font-medium block mt-0.5 whitespace-nowrap">
-              ১০ টির নিচে স্টক
+              {tr('১০ টির নিচে স্টক', 'Below 10 units')}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 font-bold">
@@ -242,13 +255,13 @@ export const ProductsView: React.FC = () => {
         <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-blue-600 block uppercase tracking-wider whitespace-nowrap">
-              ইনভেন্টরি মোট মূল্য
+              {tr('ইনভেন্টরি মোট মূল্য', 'Total Valuation')}
             </span>
             <span className="font-display font-black text-lg sm:text-xl text-stone-900 mt-0.5 block font-mono">
-              ৳ {totalValuation.toLocaleString('en-IN')}
+              {formatPrice(totalValuation)}
             </span>
             <span className="text-[11px] text-stone-500 font-medium block mt-0.5 whitespace-nowrap">
-              বর্তমান বাজার দর
+              {tr('বর্তমান বাজার দর', 'Current asset valuation')}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold">

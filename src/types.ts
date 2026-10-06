@@ -62,7 +62,7 @@ export interface Order {
   address: string;
   city: 'Inside City' | 'Outside City';
   deliveryNote?: string;
-  paymentMethod: 'Cash on Delivery' | 'bKash / Mobile Banking' | 'Credit / Debit Card';
+  paymentMethod: 'Cash on Delivery' | 'bKash' | 'Nagad' | 'Card' | 'bKash / Mobile Banking' | 'Credit / Debit Card' | string;
   items: CartItem[];
   subtotal: number;
   deliveryFee: number;

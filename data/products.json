@@ -1,0 +1,242 @@
+[
+  {
+    "id": "p1",
+    "name": "Sundarbans Wild Khalsi Raw Honey",
+    "bengaliName": "সুন্দরবনের খাঁটি খলিশা মধু",
+    "subtitle": "100% Unprocessed Natural Wild Floral Honey",
+    "category": "Raw Honey",
+    "categoryId": "honey",
+    "price": 1250,
+    "originalPrice": 1450,
+    "costPrice": 880,
+    "stock": 43,
+    "unit": "1 kg Jar",
+    "image": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=600&q=80",
+    "status": "In Stock",
+    "soldCount": 344,
+    "badge": "Best Seller",
+    "shortDescription": "Sundarbans certified pure raw honey collected directly by trusted Mawals.",
+    "description": "100% pure, unfiltered and unpasteurized Sundarbans Khalsi floral honey.",
+    "rating": 4.9,
+    "reviewCount": 184,
+    "origin": "Sundarbans Mangrove Forest, Satkhira",
+    "weightOptions": [
+      {
+        "label": "500g Glass Jar",
+        "weight": "500g",
+        "price": 650,
+        "originalPrice": 750
+      },
+      {
+        "label": "1kg Glass Jar",
+        "weight": "1kg",
+        "price": 1250,
+        "originalPrice": 1450
+      },
+      {
+        "label": "2kg Family Pack",
+        "weight": "2kg",
+        "price": 2400,
+        "originalPrice": 2800
+      }
+    ]
+  },
+  {
+    "id": "p2",
+    "name": "Wood Pressed Black Mustard Oil",
+    "bengaliName": "কাঠের ঘানির খাঁটি কালো সরিষার তেল",
+    "subtitle": "Cold-Pressed Unrefined Mustard Seed Oil",
+    "category": "Cold-Pressed Oils",
+    "categoryId": "oils",
+    "price": 360,
+    "originalPrice": 420,
+    "costPrice": 260,
+    "stock": 60,
+    "unit": "1 Litre",
+    "image": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80",
+    "status": "In Stock",
+    "soldCount": 512,
+    "badge": "Wood Pressed",
+    "shortDescription": "Traditional wooden press (কাঠের ঘানি) extracted pure pungent mustard oil.",
+    "description": "Natural pungent aroma, high smoking point, no chemicals or mixing.",
+    "rating": 4.8,
+    "reviewCount": 220,
+    "origin": "Natore, Rajshahi",
+    "weightOptions": [
+      {
+        "label": "500ml Bottle",
+        "weight": "500ml",
+        "price": 190,
+        "originalPrice": 220
+      },
+      {
+        "label": "1 Litre Bottle",
+        "weight": "1 Litre",
+        "price": 360,
+        "originalPrice": 420
+      },
+      {
+        "label": "5 Litre Gallon",
+        "weight": "5 Litre",
+        "price": 1750,
+        "originalPrice": 2000
+      }
+    ]
+  },
+  {
+    "id": "p3",
+    "name": "Grass-Fed Cow Milk Bilona Ghee",
+    "bengaliName": "বিলোনা গাওয়া ঘি (A2 দেশি গাভী)",
+    "subtitle": "Traditional Granular Bilona Churned Butter Ghee",
+    "category": "Pure Deshi Ghee",
+    "categoryId": "ghee",
+    "price": 950,
+    "originalPrice": 1100,
+    "costPrice": 690,
+    "stock": 35,
+    "unit": "500g Jar",
+    "image": "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=600&q=80",
+    "status": "In Stock",
+    "soldCount": 289,
+    "badge": "100% Pure",
+    "shortDescription": "Hand-churned grass-fed desi cow cultured curd bilona ghee with granular texture.",
+    "description": "Irresistible natural aroma, rich in vitamins A, D, E and butyric acid.",
+    "rating": 5,
+    "reviewCount": 167,
+    "origin": "Pabna & Sirajganj Bathans",
+    "weightOptions": [
+      {
+        "label": "250g Jar",
+        "weight": "250g",
+        "price": 500,
+        "originalPrice": 580
+      },
+      {
+        "label": "500g Jar",
+        "weight": "500g",
+        "price": 950,
+        "originalPrice": 1100
+      },
+      {
+        "label": "1kg Glass Jar",
+        "weight": "1kg",
+        "price": 1850,
+        "originalPrice": 2150
+      }
+    ]
+  },
+  {
+    "id": "p4",
+    "name": "Premium Jumbo Maryam & Medjool Dates",
+    "bengaliName": "জুম্বো মরিয়ম ও মেদজুল খেজুর",
+    "subtitle": "Fresh Soft Golden Caramel Saudi & Madinah Dates",
+    "category": "Dry Fruits & Nuts",
+    "categoryId": "nuts",
+    "price": 950,
+    "originalPrice": 1150,
+    "costPrice": 710,
+    "stock": 8,
+    "unit": "1 kg Box",
+    "image": "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=600&q=80",
+    "status": "Low Stock",
+    "soldCount": 420,
+    "badge": "Premium",
+    "shortDescription": "Grade-A Madinah Maryam dates, naturally sweet, moist, and free of added sugar.",
+    "description": "Rich in potassium, dietary fiber and natural energy.",
+    "rating": 4.9,
+    "reviewCount": 140,
+    "origin": "Madinah Al Munawwarah",
+    "weightOptions": [
+      {
+        "label": "500g Box",
+        "weight": "500g",
+        "price": 500,
+        "originalPrice": 600
+      },
+      {
+        "label": "1kg Box",
+        "weight": "1kg",
+        "price": 950,
+        "originalPrice": 1150
+      }
+    ]
+  },
+  {
+    "id": "p5",
+    "name": "Certified Organic Chia Seeds",
+    "bengaliName": "অর্গানিক চিয়া সিড (প্রিমিয়াম গ্রেড)",
+    "subtitle": "High Omega-3 Superfood Dietary Fiber Seeds",
+    "category": "Organic Seeds",
+    "categoryId": "seeds",
+    "price": 450,
+    "originalPrice": 550,
+    "costPrice": 310,
+    "stock": 28,
+    "unit": "500g Pack",
+    "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80",
+    "status": "In Stock",
+    "soldCount": 310,
+    "badge": "Organic",
+    "shortDescription": "100% natural pesticide-free chia seeds for weight management and heart wellness.",
+    "description": "Loaded with plant protein, calcium, antioxidants and omega-3.",
+    "rating": 4.8,
+    "reviewCount": 95,
+    "origin": "Direct Import (South America)",
+    "weightOptions": [
+      {
+        "label": "250g Pack",
+        "weight": "250g",
+        "price": 240,
+        "originalPrice": 290
+      },
+      {
+        "label": "500g Pack",
+        "weight": "500g",
+        "price": 450,
+        "originalPrice": 550
+      },
+      {
+        "label": "1kg Jar",
+        "weight": "1kg",
+        "price": 850,
+        "originalPrice": 1050
+      }
+    ]
+  },
+  {
+    "id": "p6",
+    "name": "Natural Extra Virgin Cold-Pressed Coconut Oil",
+    "bengaliName": "এক্সট্রা ভার্জিন নারিকেল তেল",
+    "subtitle": "Raw Edible & Hair Care Cold Extracted Coconut Oil",
+    "category": "Cold-Pressed Oils",
+    "categoryId": "oils",
+    "price": 420,
+    "originalPrice": 490,
+    "costPrice": 290,
+    "stock": 22,
+    "unit": "500ml Bottle",
+    "image": "https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=600&q=80",
+    "status": "In Stock",
+    "soldCount": 195,
+    "badge": "Cold-Pressed",
+    "shortDescription": "Cold extracted virgin coconut oil from fresh coastal coconuts.",
+    "description": "100% chemical-free, food-grade and cosmetic-grade virgin coconut oil.",
+    "rating": 4.7,
+    "reviewCount": 78,
+    "origin": "Bagerhat Coastal Groves",
+    "weightOptions": [
+      {
+        "label": "250ml Glass Bottle",
+        "weight": "250ml",
+        "price": 230,
+        "originalPrice": 270
+      },
+      {
+        "label": "500ml Glass Bottle",
+        "weight": "500ml",
+        "price": 420,
+        "originalPrice": 490
+      }
+    ]
+  }
+]

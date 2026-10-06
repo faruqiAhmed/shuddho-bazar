@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { TrendingUp } from 'lucide-react';
 import { REVENUE_TIMELINE } from '../../data/adminMockData';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 export const RevenueChart: React.FC = () => {
+  const { tr, formatPrice } = useAdminLanguage();
   const [timeframe, setTimeframe] = useState<'7D' | '30D' | '90D'>('7D');
   const [hoveredPoint, setHoveredPoint] = useState<{ label: string; value: number } | null>(null);
 
@@ -43,10 +45,13 @@ export const RevenueChart: React.FC = () => {
           </div>
           <div>
             <h3 className="font-display font-extrabold text-base text-stone-900 leading-tight">
-              Revenue Overview
+              {tr('আয়ের সারসংক্ষেপ', 'Revenue Overview')}
             </h3>
             <p className="text-xs text-stone-400 mt-0.5">
-              Total sales revenue for the last {timeframe === '7D' ? '7 days' : timeframe === '30D' ? '30 days' : '90 days'}
+              {tr(
+                `বিগত ${timeframe === '7D' ? '৭ দিনের' : timeframe === '30D' ? '৩০ দিনের' : '৯০ দিনের'} মোট বিক্রয় রেভিনিউ`,
+                `Total sales revenue for the last ${timeframe === '7D' ? '7 days' : timeframe === '30D' ? '30 days' : '90 days'}`
+              )}
             </p>
           </div>
         </div>
@@ -63,7 +68,7 @@ export const RevenueChart: React.FC = () => {
                   : 'text-stone-600 hover:text-stone-900'
               }`}
             >
-              {tab}
+              {tab === '7D' ? tr('৭ দিন', '7D') : tab === '30D' ? tr('৩০ দিন', '30D') : tr('৯০ দিন', '90D')}
             </button>
           ))}
         </div>

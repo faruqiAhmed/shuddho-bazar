@@ -13,10 +13,12 @@ import {
   getOrders, 
   updateOrderStatus, 
   deleteOrder,
+  subscribeToOrders
 } from '../../services/orderService';
 import { OrderTable } from './OrderTable';
 import { OrderDetails } from './OrderDetails';
 import { CreateOrderPage } from './CreateOrderPage';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 interface OrdersViewProps {
   initialSelectedOrder?: AdminOrder | null;
@@ -27,6 +29,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   initialSelectedOrder,
   onClearInitialOrder,
 }) => {
+  const { tr, formatNumber, formatPrice, isBn } = useAdminLanguage();
   // Navigation view mode inside Orders
   const [viewMode, setViewMode] = useState<'list' | 'create' | 'details'>(
     initialSelectedOrder ? 'details' : 'list'
@@ -49,6 +52,13 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
       setViewMode('details');
     }
   }, [initialSelectedOrder]);
+
+  useEffect(() => {
+    const unsub = subscribeToOrders(() => {
+      setOrders(getOrders());
+    });
+    return unsub;
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -210,14 +220,17 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         <div>
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="font-display font-black text-xl sm:text-2xl text-stone-900 leading-tight">
-              অর্ডার ব্যবস্থাপনা (Orders Management)
+              {tr('অর্ডার ব্যবস্থাপনা (Orders Management)', 'Orders Management')}
             </h2>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap">
-              {stats.total} Orders
+              {formatNumber(stats.total)} {tr('টি অর্ডার', 'Orders')}
             </span>
           </div>
           <p className="text-xs text-stone-500 mt-1 max-w-xl leading-relaxed">
-            অনলাইন ও অফলাইন সকল অর্ডার ট্র্যাকিং, ডেলিভারি কুরিয়ারে হস্তান্তর ও চালান প্রিন্টিং।
+            {tr(
+              'অনলাইন ও অফলাইন সকল অর্ডার ট্র্যাকিং, ডেলিভারি কুরিয়ারে হস্তান্তর ও চালান প্রিন্টিং।',
+              'Track online and offline orders, courier dispatches, and print invoices.'
+            )}
           </p>
         </div>
 
@@ -228,7 +241,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
             className="flex-1 sm:flex-none px-4 py-2.5 bg-[#15803d] hover:bg-[#166534] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow cursor-pointer whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
-            <span>নতুন অর্ডার তৈরি (Add Order)</span>
+            <span>{tr('নতুন অর্ডার তৈরি (Add Order)', 'Create New Order')}</span>
           </button>
 
           <button
@@ -237,7 +250,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
             title="Download CSV"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>এক্সপোর্ট (CSV)</span>
+            <span>{tr('এক্সপোর্ট (CSV)', 'Export CSV')}</span>
           </button>
         </div>
       </div>
@@ -247,13 +260,13 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-stone-400 block uppercase tracking-wider whitespace-nowrap">
-              সর্বমোট অর্ডার
+              {tr('সর্বমোট অর্ডার', 'Total Orders')}
             </span>
-            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block">
-              {stats.total}
+            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block font-mono">
+              {formatNumber(stats.total)}
             </span>
-            <span className="text-[11px] text-emerald-700 font-bold block mt-0.5 whitespace-nowrap">
-              মোট ৳ {stats.totalSales.toLocaleString('en-IN')}
+            <span className="text-[11px] text-emerald-700 font-bold block mt-0.5 whitespace-nowrap font-mono">
+              {tr('মোট', 'Total')} {formatPrice(stats.totalSales)}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center text-stone-600 font-bold text-lg">
@@ -264,13 +277,13 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-amber-600 block uppercase tracking-wider whitespace-nowrap">
-              প্রসেসিং
+              {tr('প্রসেসিং', 'Processing')}
             </span>
-            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block">
-              {stats.processing}
+            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block font-mono">
+              {formatNumber(stats.processing)}
             </span>
             <span className="text-[11px] text-stone-400 font-medium block mt-0.5 whitespace-nowrap">
-              প্যাকিং ও যাচাই
+              {tr('প্যাকিং ও যাচাই', 'Packaging & Quality')}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 font-bold">
@@ -281,13 +294,13 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-blue-600 block uppercase tracking-wider whitespace-nowrap">
-              অন দ্য ওয়ে (Shipped)
+              {tr('অন দ্য ওয়ে (Shipped)', 'Shipped / In Transit')}
             </span>
-            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block">
-              {stats.shipped}
+            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block font-mono">
+              {formatNumber(stats.shipped)}
             </span>
             <span className="text-[11px] text-stone-400 font-medium block mt-0.5 whitespace-nowrap">
-              কুরিয়ারে হস্তান্তরকৃত
+              {tr('কুরিয়ারে হস্তান্তরকৃত', 'Handed over to courier')}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold">
@@ -298,13 +311,13 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         <div className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-emerald-600 block uppercase tracking-wider whitespace-nowrap">
-              ডেলিভার্ড
+              {tr('ডেলিভার্ড', 'Delivered')}
             </span>
-            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block">
-              {stats.delivered}
+            <span className="font-display font-black text-xl sm:text-2xl text-stone-900 mt-0.5 block font-mono">
+              {formatNumber(stats.delivered)}
             </span>
             <span className="text-[11px] text-emerald-700 font-bold block mt-0.5 whitespace-nowrap">
-              সফলভাবে সরবরাহকৃত
+              {tr('সফলভাবে সরবরাহকৃত', 'Successfully Delivered')}
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold">

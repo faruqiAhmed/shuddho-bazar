@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { CartItem, Order, CustomerUser } from '../types';
 import { formatBdt } from './BdtPrice';
+import { createLiveOrder } from '../services/realtimeSync';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -106,12 +107,31 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       estimatedDelivery: cityArea === 'Inside City' ? 'Within 24 Hours' : 'Within 48 Hours',
     };
 
+    // Realtime sync: save to server and broadcast live to Admin & Store
+    createLiveOrder({
+      id: `#${orderId}`,
+      customerName,
+      customerPhone: phone,
+      customerAddress: address,
+      deliveryArea: cityArea,
+      items,
+      subtotal,
+      deliveryFee,
+      discount: discountAmount,
+      amount: finalTotal,
+      paymentMethod: paymentMethod === 'bKash / Mobile Banking' ? 'bKash' : paymentMethod,
+      paymentStatus: paymentMethod === 'bKash / Mobile Banking' ? 'Paid' : 'Unpaid',
+      status: 'Processing',
+      notes: deliveryNote,
+      orderSource: 'Website'
+    }).catch(console.error);
+
     setTimeout(() => {
       setIsSubmitting(false);
-      setCompletedOrder(newOrder);
+      onClose();
       onOrderSuccess(newOrder);
       onClearCart();
-    }, 600);
+    }, 400);
   };
 
   const handleFinish = () => {

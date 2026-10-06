@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { AdminOrder } from '../../types';
-import { RECENT_ORDERS_DATA } from '../../data/adminMockData';
+import { getOrders, subscribeToOrders } from '../../services/orderService';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 interface RecentOrdersProps {
   onViewAll?: () => void;
@@ -12,6 +13,15 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
   onViewAll,
   onViewOrderDetails,
 }) => {
+  const { tr, formatPrice, formatNumber } = useAdminLanguage();
+  const [orders, setOrders] = useState<AdminOrder[]>(() => getOrders());
+
+  useEffect(() => {
+    const unsub = subscribeToOrders(() => {
+      setOrders(getOrders());
+    });
+    return unsub;
+  }, []);
   // Render payment method badge
   const renderPaymentBadge = (method: AdminOrder['paymentMethod']) => {
     switch (method) {
@@ -56,25 +66,25 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
       case 'Delivered':
         return (
           <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#dcfce7] text-[#15803d]">
-            Delivered
+            {tr('ডেলিভার্ড', 'Delivered')}
           </span>
         );
       case 'Processing':
         return (
           <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#fef3c7] text-[#d97706]">
-            Processing
+            {tr('প্রসেসিং', 'Processing')}
           </span>
         );
       case 'Shipped':
         return (
           <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#dbeafe] text-[#2563eb]">
-            Shipped
+            {tr('শিপ্ড', 'Shipped')}
           </span>
         );
       case 'Cancelled':
         return (
           <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#fee2e2] text-[#dc2626]">
-            Cancelled
+            {tr('বাতিল', 'Cancelled')}
           </span>
         );
     }
@@ -90,10 +100,10 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
           </div>
           <div>
             <h3 className="font-display font-extrabold text-base text-stone-900 leading-tight">
-              Recent Orders
+              {tr('সাম্প্রতিক অর্ডারসমূহ', 'Recent Orders')}
             </h3>
             <p className="text-xs text-stone-400 mt-0.5">
-              Latest customer orders
+              {tr('সর্বশেষ গ্রাহক অর্ডার ও স্থিতি', 'Latest customer orders and fulfillment status')}
             </p>
           </div>
         </div>
@@ -103,7 +113,7 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
             onClick={onViewAll}
             className="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer"
           >
-            View All
+            {tr('সব দেখুন', 'View All')}
           </button>
         )}
       </div>
@@ -113,18 +123,18 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
         <table className="w-full text-left text-xs whitespace-nowrap">
           <thead>
             <tr className="border-b border-stone-100 text-stone-400 font-semibold text-[11px]">
-              <th className="py-3 px-3 font-semibold">Order ID</th>
-              <th className="py-3 px-3 font-semibold">Customer</th>
-              <th className="py-3 px-3 font-semibold">Items</th>
-              <th className="py-3 px-3 font-semibold">Amount</th>
-              <th className="py-3 px-3 font-semibold">Payment</th>
-              <th className="py-3 px-3 font-semibold">Status</th>
-              <th className="py-3 px-3 font-semibold">Date</th>
-              <th className="py-3 px-3 font-semibold text-right">Action</th>
+              <th className="py-3 px-3 font-semibold">{tr('অর্ডার আইডি', 'Order ID')}</th>
+              <th className="py-3 px-3 font-semibold">{tr('গ্রাহক', 'Customer')}</th>
+              <th className="py-3 px-3 font-semibold">{tr('আইটেম', 'Items')}</th>
+              <th className="py-3 px-3 font-semibold">{tr('মূল্য', 'Amount')}</th>
+              <th className="py-3 px-3 font-semibold">{tr('পেমেন্ট', 'Payment')}</th>
+              <th className="py-3 px-3 font-semibold">{tr('স্ট্যাটাস', 'Status')}</th>
+              <th className="py-3 px-3 font-semibold">{tr('তারিখ', 'Date')}</th>
+              <th className="py-3 px-3 font-semibold text-right">{tr('অ্যাকশন', 'Action')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-100">
-            {RECENT_ORDERS_DATA.map((order) => (
+            {orders.slice(0, 6).map((order) => (
               <tr key={order.id} className="hover:bg-stone-50/70 transition-colors">
                 {/* Order ID */}
                 <td className="py-3.5 px-3 font-bold text-stone-900">
@@ -186,7 +196,7 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
                     onClick={() => onViewOrderDetails?.(order)}
                     className="px-2.5 py-1 bg-stone-50 hover:bg-emerald-50 text-stone-700 hover:text-emerald-800 border border-stone-200/90 hover:border-emerald-300 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-2xs"
                   >
-                    View
+                    {tr('বিস্তারিত', 'View')}
                   </button>
                 </td>
               </tr>

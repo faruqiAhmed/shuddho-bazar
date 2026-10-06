@@ -42,14 +42,30 @@ export const OrderTable: React.FC<OrderTableProps> = ({
     const statusText = status || (method === 'Cash on Delivery' ? 'COD - Unpaid' : 'Paid');
     return (
       <div className="flex flex-col items-start gap-1">
-        <span className="font-bold text-stone-800 text-xs whitespace-nowrap">
-          {method}
-        </span>
+        {method === 'Nagad' ? (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fff7ed] text-[#ea580c] border border-orange-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#ea580c] mr-1" />
+            Nagad
+          </span>
+        ) : method === 'bKash' ? (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fdf2f8] text-[#db2777] border border-pink-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#db2777] mr-1" />
+            bKash
+          </span>
+        ) : method === 'Card' ? (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5f3ff] text-[#7c3aed] border border-purple-200">
+            Card
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#eff6ff] text-[#2563eb] border border-blue-200">
+            Cash on Delivery
+          </span>
+        )}
         <span
-          className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider whitespace-nowrap inline-block ${
+          className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase tracking-wider whitespace-nowrap inline-block ${
             isPaid
-              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-              : 'bg-amber-100 text-amber-800 border border-amber-200'
+              ? 'bg-emerald-100 text-emerald-800'
+              : 'bg-amber-100 text-amber-800'
           }`}
         >
           {statusText}

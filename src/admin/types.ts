@@ -97,9 +97,13 @@ export interface AdminProduct {
   status: 'In Stock' | 'Low Stock' | 'Out of Stock';
   soldCount: number;
   subtitle?: string;
+  shortDescription?: string;
   description?: string;
   badge?: string;
-  weightOptions?: { weight: string; price: number; originalPrice?: number }[];
+  origin?: string;
+  rating?: number;
+  reviewCount?: number;
+  weightOptions?: { label?: string; weight: string; price: number; originalPrice?: number }[];
 }
 
 export interface CustomerRecord {

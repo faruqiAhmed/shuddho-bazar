@@ -1,12 +1,14 @@
 import React from 'react';
 import { Truck, Clock, Hourglass, RotateCcw, ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { DELIVERY_PERFORMANCE_METRICS } from '../../data/adminMockData';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 interface DeliveryPerformanceProps {
   onViewDetails?: () => void;
 }
 
 export const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ onViewDetails }) => {
+  const { tr, formatNumber, isBn } = useAdminLanguage();
   const { 
     onTimePercentage, 
     onTimeCount, 
@@ -33,10 +35,10 @@ export const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ onView
           </div>
           <div>
             <h3 className="font-display font-extrabold text-base text-stone-900 leading-tight">
-              Delivery Performance
+              {tr('ডেলিভারি পারফরম্যান্স', 'Delivery Performance')}
             </h3>
             <p className="text-xs text-stone-400 mt-0.5">
-              Live fleet & fulfillment metrics
+              {tr('লাইভ ফ্লিট ও ডেলিভারি রিপোর্ট', 'Live fleet & fulfillment metrics')}
             </p>
           </div>
         </div>
@@ -46,7 +48,7 @@ export const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ onView
             onClick={onViewDetails}
             className="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-colors cursor-pointer"
           >
-            View Details
+            {tr('বিস্তারিত দেখুন', 'View Details')}
           </button>
         )}
       </div>
@@ -82,8 +84,8 @@ export const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ onView
 
           {/* Center percentage */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="font-display font-black text-xl text-stone-900">
-              {onTimePercentage}%
+            <span className="font-display font-black text-xl text-stone-900 font-mono">
+              {formatNumber(onTimePercentage)}%
             </span>
           </div>
         </div>
@@ -91,13 +93,13 @@ export const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ onView
         {/* Text Details */}
         <div>
           <h4 className="font-display font-bold text-sm text-stone-900 leading-tight">
-            On-Time Delivery
+            {tr('সময়মতো ডেলিভারি', 'On-Time Delivery')}
           </h4>
-          <p className="text-xs text-stone-500 mt-0.5 font-medium">
-            {onTimeCount} of {totalOrders} orders
+          <p className="text-xs text-stone-500 mt-0.5 font-medium font-mono">
+            {isBn ? `${formatNumber(onTimeCount)} / ${formatNumber(totalOrders)} টি অর্ডার` : `${onTimeCount} of ${totalOrders} orders`}
           </p>
           <span className="inline-block mt-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-            Excellent Rating
+            {tr('চমৎকার রেটিং', 'Excellent Rating')}
           </span>
         </div>
       </div>
@@ -108,11 +110,11 @@ export const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ onView
         <div className="py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2 text-stone-600">
             <Clock className="w-4 h-4 text-stone-400" />
-            <span className="font-medium">Avg. Delivery Time</span>
+            <span className="font-medium">{tr('গড় ডেলিভারি সময়', 'Avg. Delivery Time')}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-stone-900">{avgDeliveryTime}</span>
-            <span className="text-[11px] font-bold text-emerald-600 flex items-center">
+            <span className="font-bold text-stone-900 font-mono">{avgDeliveryTime}</span>
+            <span className="text-[11px] font-bold text-emerald-600 flex items-center font-mono">
               <ArrowDownRight className="w-3 h-3" />
               {avgDeliveryChange}
             </span>
@@ -123,11 +125,11 @@ export const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ onView
         <div className="py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2 text-stone-600">
             <Hourglass className="w-4 h-4 text-stone-400" />
-            <span className="font-medium">Delayed Orders</span>
+            <span className="font-medium">{tr('বিলম্বিত অর্ডার', 'Delayed Orders')}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-stone-900">{delayedOrders}</span>
-            <span className="text-[11px] font-bold text-emerald-600 flex items-center">
+            <span className="font-bold text-stone-900 font-mono">{formatNumber(delayedOrders)}</span>
+            <span className="text-[11px] font-bold text-emerald-600 flex items-center font-mono">
               <ArrowDownRight className="w-3 h-3" />
               {delayedChange}
             </span>
@@ -138,11 +140,11 @@ export const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ onView
         <div className="py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2 text-stone-600">
             <RotateCcw className="w-4 h-4 text-stone-400" />
-            <span className="font-medium">Returned Orders</span>
+            <span className="font-medium">{tr('ফেরত আসা অর্ডার', 'Returned Orders')}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-stone-900">{returnedOrders}</span>
-            <span className="text-[11px] font-bold text-emerald-600 flex items-center">
+            <span className="font-bold text-stone-900 font-mono">{formatNumber(returnedOrders)}</span>
+            <span className="text-[11px] font-bold text-emerald-600 flex items-center font-mono">
               <ArrowUpRight className="w-3 h-3" />
               {returnedChange}
             </span>

@@ -19,6 +19,7 @@ import {
 import { CustomerUser, SavedAddress, Order, CartItem } from '../types';
 import { addSavedAddress, deleteSavedAddress, formatDisplayPhone } from '../services/authService';
 import { formatBdt } from './BdtPrice';
+import { getDynamicOrderDate } from '../utils/dateUtils';
 
 interface UserProfilePageProps {
   user: CustomerUser;
@@ -29,13 +30,13 @@ interface UserProfilePageProps {
   onReorder: (order: any) => void;
 }
 
-// 7 Pre-seeded past orders matching user profile screenshot (#DF-10086 as primary)
+// Pre-seeded past orders with dynamic real dates
 const MOCK_PROFILE_ORDERS = [
   {
     id: '#DF-10086',
     rawId: 'DF-10086',
     status: 'ডেলিভারি সম্পন্ন',
-    date: 'Sep 18, 2025 04:32 PM',
+    date: getDynamicOrderDate(0, '04:32 PM'),
     amount: 1250,
     paymentMethod: 'bKash (Paid)',
     courierId: 'STDF-10086',
@@ -60,7 +61,7 @@ const MOCK_PROFILE_ORDERS = [
     id: '#DF-10072',
     rawId: 'DF-10072',
     status: 'ডেলিভারি সম্পন্ন',
-    date: 'Sep 02, 2025 11:20 AM',
+    date: getDynamicOrderDate(2, '11:20 AM'),
     amount: 1950,
     paymentMethod: 'Nagad (Paid)',
     courierId: 'STDF-10072',
@@ -85,7 +86,7 @@ const MOCK_PROFILE_ORDERS = [
     id: '#DF-10065',
     rawId: 'DF-10065',
     status: 'ডেলিভারি সম্পন্ন',
-    date: 'Aug 19, 2025 03:15 PM',
+    date: getDynamicOrderDate(4, '03:15 PM'),
     amount: 850,
     paymentMethod: 'Cash on Delivery',
     courierId: 'STDF-10065',
@@ -110,7 +111,7 @@ const MOCK_PROFILE_ORDERS = [
     id: '#DF-10058',
     rawId: 'DF-10058',
     status: 'ডেলিভারি সম্পন্ন',
-    date: 'Jul 28, 2025 01:45 PM',
+    date: getDynamicOrderDate(7, '01:45 PM'),
     amount: 2450,
     paymentMethod: 'bKash (Paid)',
     courierId: 'STDF-10058',
@@ -135,7 +136,7 @@ const MOCK_PROFILE_ORDERS = [
     id: '#DF-10049',
     rawId: 'DF-10049',
     status: 'ডেলিভারি সম্পন্ন',
-    date: 'Jun 14, 2025 05:30 PM',
+    date: getDynamicOrderDate(12, '05:30 PM'),
     amount: 1400,
     paymentMethod: 'bKash (Paid)',
     courierId: 'STDF-10049',
@@ -160,7 +161,7 @@ const MOCK_PROFILE_ORDERS = [
     id: '#DF-10034',
     rawId: 'DF-10034',
     status: 'ডেলিভারি সম্পন্ন',
-    date: 'May 04, 2025 10:15 AM',
+    date: getDynamicOrderDate(18, '10:15 AM'),
     amount: 980,
     paymentMethod: 'Cash on Delivery',
     courierId: 'STDF-10034',
@@ -185,7 +186,7 @@ const MOCK_PROFILE_ORDERS = [
     id: '#DF-10021',
     rawId: 'DF-10021',
     status: 'ডেলিভারি সম্পন্ন',
-    date: 'Mar 22, 2025 02:40 PM',
+    date: getDynamicOrderDate(25, '02:40 PM'),
     amount: 1650,
     paymentMethod: 'bKash (Paid)',
     courierId: 'STDF-10021',

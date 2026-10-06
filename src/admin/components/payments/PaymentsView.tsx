@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CreditCard, CheckCircle2, Clock, Download, Search } from 'lucide-react';
 import { AdminPagination } from '../common/AdminPagination';
+import { getDynamicOrderDate } from '../../../utils/dateUtils';
 
 export const PaymentsView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -8,18 +9,18 @@ export const PaymentsView: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
 
   const transactions = [
-    { id: 'TXN-99120', orderId: '#SB-10248', customer: 'রাফি আহমেদ', method: 'bKash', amount: 1245, status: 'Settled', date: 'Sep 27, 2025 11:45 AM' },
-    { id: 'TXN-99119', orderId: '#SB-10247', customer: 'সাবিনা আক্তার', method: 'Cash on Delivery', amount: 865, status: 'Pending Collection', date: 'Sep 27, 2025 10:32 AM' },
-    { id: 'TXN-99118', orderId: '#SB-10246', customer: 'মো. সাইফুল ইসলাম', method: 'Nagad', amount: 2430, status: 'Settled', date: 'Sep 27, 2025 09:15 AM' },
-    { id: 'TXN-99117', orderId: '#SB-10245', customer: 'নাসরিন সুলতানা', method: 'bKash', amount: 1760, status: 'Settled', date: 'Sep 26, 2025 08:47 PM' },
-    { id: 'TXN-99116', orderId: '#SB-10244', customer: 'তানভীর হাসান', method: 'Card (Visa/Mastercard)', amount: 3280, status: 'Settled', date: 'Sep 26, 2025 06:22 PM' },
-    { id: 'TXN-99115', orderId: '#SB-10243', customer: 'ফারহান করিম', method: 'bKash', amount: 1450, status: 'Settled', date: 'Sep 26, 2025 03:10 PM' },
-    { id: 'TXN-99114', orderId: '#SB-10242', customer: 'মোছা. জেসমিন', method: 'Nagad', amount: 980, status: 'Settled', date: 'Sep 25, 2025 01:25 PM' },
-    { id: 'TXN-99113', orderId: '#SB-10241', customer: 'কামরুল হাসান', method: 'Cash on Delivery', amount: 2150, status: 'Pending Collection', date: 'Sep 25, 2025 11:15 AM' },
-    { id: 'TXN-99112', orderId: '#SB-10240', customer: 'আব্দুল মোমেন', method: 'bKash', amount: 750, status: 'Settled', date: 'Sep 24, 2025 05:40 PM' },
-    { id: 'TXN-99111', orderId: '#SB-10239', customer: 'আফরোজা বেগম', method: 'Rocket', amount: 1850, status: 'Settled', date: 'Sep 24, 2025 02:18 PM' },
-    { id: 'TXN-99110', orderId: '#SB-10238', customer: 'সোহেল রানা', method: 'Card (Visa)', amount: 2990, status: 'Settled', date: 'Sep 23, 2025 07:30 PM' },
-    { id: 'TXN-99109', orderId: '#SB-10237', customer: 'নূরজাহান পারভীন', method: 'bKash', amount: 620, status: 'Settled', date: 'Sep 23, 2025 10:05 AM' }
+    { id: 'TXN-99120', orderId: '#SB-10248', customer: 'রাফি আহমেদ', method: 'bKash', amount: 1245, status: 'Settled', date: getDynamicOrderDate(0, '11:45 AM') },
+    { id: 'TXN-99119', orderId: '#SB-10247', customer: 'সাবিনা আক্তার', method: 'Cash on Delivery', amount: 865, status: 'Pending Collection', date: getDynamicOrderDate(0, '10:32 AM') },
+    { id: 'TXN-99118', orderId: '#SB-10246', customer: 'মো. সাইফুল ইসলাম', method: 'Nagad', amount: 2430, status: 'Settled', date: getDynamicOrderDate(0, '09:15 AM') },
+    { id: 'TXN-99117', orderId: '#SB-10245', customer: 'নাসরিন সুলতানা', method: 'bKash', amount: 1760, status: 'Settled', date: getDynamicOrderDate(1, '08:47 PM') },
+    { id: 'TXN-99116', orderId: '#SB-10244', customer: 'তানভীর হাসান', method: 'Card (Visa/Mastercard)', amount: 3280, status: 'Settled', date: getDynamicOrderDate(1, '06:22 PM') },
+    { id: 'TXN-99115', orderId: '#SB-10243', customer: 'ফারহান করিম', method: 'bKash', amount: 1450, status: 'Settled', date: getDynamicOrderDate(1, '03:10 PM') },
+    { id: 'TXN-99114', orderId: '#SB-10242', customer: 'মোছা. জেসমিন', method: 'Nagad', amount: 980, status: 'Settled', date: getDynamicOrderDate(2, '01:25 PM') },
+    { id: 'TXN-99113', orderId: '#SB-10241', customer: 'কামরুল হাসান', method: 'Cash on Delivery', amount: 2150, status: 'Pending Collection', date: getDynamicOrderDate(2, '11:15 AM') },
+    { id: 'TXN-99112', orderId: '#SB-10240', customer: 'আব্দুল মোমেন', method: 'bKash', amount: 750, status: 'Settled', date: getDynamicOrderDate(3, '05:40 PM') },
+    { id: 'TXN-99111', orderId: '#SB-10239', customer: 'আফরোজা বেগম', method: 'Rocket', amount: 1850, status: 'Settled', date: getDynamicOrderDate(3, '02:18 PM') },
+    { id: 'TXN-99110', orderId: '#SB-10238', customer: 'সোহেল রানা', method: 'Card (Visa)', amount: 2990, status: 'Settled', date: getDynamicOrderDate(4, '07:30 PM') },
+    { id: 'TXN-99109', orderId: '#SB-10237', customer: 'নূরজাহান পারভীন', method: 'bKash', amount: 620, status: 'Settled', date: getDynamicOrderDate(4, '10:05 AM') }
   ];
 
   const filtered = transactions.filter(t =>

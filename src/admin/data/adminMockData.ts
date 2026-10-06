@@ -8,6 +8,7 @@ import {
   PaymentTransaction, 
   PromoCoupon 
 } from '../types';
+import { getDynamicOrderDate } from '../../utils/dateUtils';
 
 export const ADMIN_STATS = [
   {
@@ -149,7 +150,7 @@ export const RECENT_ORDERS_DATA: AdminOrder[] = [
     amount: 1245,
     paymentMethod: 'bKash',
     status: 'Delivered',
-    date: 'Sep 27, 2025 11:45 AM',
+    date: getDynamicOrderDate(0, '11:45 AM'),
     deliveryRider: 'Rahim Mia (Rider #14)',
   },
   {
@@ -169,7 +170,7 @@ export const RECENT_ORDERS_DATA: AdminOrder[] = [
     amount: 865,
     paymentMethod: 'Cash on Delivery',
     status: 'Processing',
-    date: 'Sep 27, 2025 10:32 AM',
+    date: getDynamicOrderDate(0, '10:32 AM'),
     deliveryRider: 'Unassigned',
   },
   {
@@ -189,7 +190,7 @@ export const RECENT_ORDERS_DATA: AdminOrder[] = [
     amount: 2430,
     paymentMethod: 'Nagad',
     status: 'Shipped',
-    date: 'Sep 27, 2025 09:15 AM',
+    date: getDynamicOrderDate(0, '09:15 AM'),
     deliveryRider: 'Faruk Hossain (Steadfast)',
   },
   {
@@ -209,7 +210,7 @@ export const RECENT_ORDERS_DATA: AdminOrder[] = [
     amount: 1760,
     paymentMethod: 'bKash',
     status: 'Delivered',
-    date: 'Sep 26, 2025 08:47 PM',
+    date: getDynamicOrderDate(1, '08:47 PM'),
     deliveryRider: 'Karim Ahmed (Rider #08)',
   },
   {
@@ -230,7 +231,7 @@ export const RECENT_ORDERS_DATA: AdminOrder[] = [
     amount: 3280,
     paymentMethod: 'Card',
     status: 'Processing',
-    date: 'Sep 26, 2025 06:22 PM',
+    date: getDynamicOrderDate(1, '06:22 PM'),
     deliveryRider: 'Unassigned',
   },
 ];

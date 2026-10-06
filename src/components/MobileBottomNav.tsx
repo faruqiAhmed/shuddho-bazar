@@ -86,20 +86,21 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <span className="text-[10px] font-semibold mt-0.5">পছন্দ</span>
         </button>
 
-        {/* Cart */}
+        {/* Cart - Only Icon, No Text */}
         <button
           onClick={onOpenCart}
-          className="relative flex flex-col items-center justify-center flex-1 py-1 text-emerald-800 transition-transform active:scale-95 cursor-pointer"
+          className="relative flex items-center justify-center flex-1 py-1.5 text-emerald-800 transition-transform active:scale-95 cursor-pointer"
+          aria-label="Shopping Cart"
+          title="Shopping Cart"
         >
-          <div className="relative">
-            <ShoppingBag className="w-5 h-5 text-emerald-800" />
+          <div className="relative p-1">
+            <ShoppingBag className="w-6 h-6 text-emerald-800" />
             {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-2 min-w-4 h-4 px-1 bg-amber-400 text-emerald-950 text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-white">
+              <span className="absolute -top-0.5 -right-1 min-w-4 h-4 px-1 bg-amber-400 text-emerald-950 text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-white leading-none">
                 {cartCount}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-bold text-emerald-800 mt-0.5">কার্ট</span>
         </button>
       </div>
     </nav>

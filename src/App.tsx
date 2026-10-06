@@ -35,9 +35,6 @@ import {
   CartDrawer 
 } from './components/CartDrawer';
 import { 
-  CheckoutModal 
-} from './components/CheckoutModal';
-import { 
   OrderTrackingModal 
 } from './components/OrderTrackingModal';
 import { 
@@ -49,6 +46,12 @@ import {
 import { 
   UserProfilePage 
 } from './components/UserProfilePage';
+import { 
+  CheckoutPage 
+} from './components/CheckoutPage';
+import { 
+  OrderConfirmationPage 
+} from './components/OrderConfirmationPage';
 import { 
   PurityPromiseSection 
 } from './components/PurityPromiseSection';
@@ -64,6 +67,13 @@ import { PRODUCTS, CATEGORIES } from './data/mockData';
 import { Product, CartItem, WeightOption, Order, CustomerUser } from './types';
 import { getCurrentUser, logoutUser, updateProfile } from './services/authService';
 import { 
+  getLiveStoreProducts, 
+  getLiveOrders, 
+  adminOrderToStoreOrder, 
+  subscribeToRealtime 
+} from './services/realtimeSync';
+import { playNewOrderSound } from './utils/audioNotification';
+import { 
   Filter, 
   ArrowUpDown, 
   ShoppingBag, 
@@ -77,8 +87,9 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // View mode: 'store' by default, or 'admin', or 'profile' (dedicated profile page)
-  const [viewMode, setViewMode] = useState<'admin' | 'store' | 'profile'>('store');
+  // View mode: 'store' by default, or 'admin', or 'profile', or 'checkout', or 'order-confirmation'
+  const [viewMode, setViewMode] = useState<'admin' | 'store' | 'profile' | 'checkout' | 'order-confirmation'>('store');
+  const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
 
   // Customer Authentication state
   const [currentUser, setCurrentUser] = useState<CustomerUser | null>(() => getCurrentUser());
@@ -124,13 +135,35 @@ export default function App() {
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   const [discountAmount, setDiscountAmount] = useState<number>(0);
 
+  // Live Products & Orders synchronized in real-time with Admin & backend
+  const [storeProducts, setStoreProducts] = useState<Product[]>(() => {
+    const live = getLiveStoreProducts();
+    return live.length > 0 ? live : PRODUCTS;
+  });
+
+  const [liveOrders, setLiveOrders] = useState<Order[]>(() => {
+    return getLiveOrders().map(adminOrderToStoreOrder);
+  });
+
   // Recent placed orders
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+
+  // Real-time synchronization subscription
+  useEffect(() => {
+    const unsubscribe = subscribeToRealtime(() => {
+      const live = getLiveStoreProducts();
+      if (live.length > 0) {
+        setStoreProducts(live);
+      }
+      const orders = getLiveOrders();
+      setLiveOrders(orders.map(adminOrderToStoreOrder));
+    });
+    return unsubscribe;
+  }, []);
 
   // Modals state
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState<boolean>(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState<boolean>(false);
   const [isOrderTrackingOpen, setIsOrderTrackingOpen] = useState<boolean>(false);
@@ -239,7 +272,9 @@ export default function App() {
         ];
       }
     });
-    setIsCheckoutOpen(true);
+    setIsCartOpen(false);
+    setViewMode('checkout');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleUpdateCartQuantity = (id: string, delta: number) => {
@@ -276,7 +311,12 @@ export default function App() {
   };
 
   const handleOrderSuccess = (order: Order) => {
+    playNewOrderSound();
     setRecentOrders(prev => [order, ...prev]);
+    setConfirmedOrder(order);
+    setViewMode('order-confirmation');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     if (currentUser) {
       const updatedUser = updateProfile(currentUser.id, {
         totalOrders: (currentUser.totalOrders || 0) + 1,
@@ -312,7 +352,7 @@ export default function App() {
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => {
+    return storeProducts.filter((p) => {
       // Category filter
       const matchesCategory = selectedCategory === 'all' || p.categoryId === selectedCategory;
 
@@ -330,13 +370,56 @@ export default function App() {
       if (sortBy === 'rating') return b.rating - a.rating;
       return 0; // featured default
     });
-  }, [selectedCategory, searchQuery, sortBy]);
+  }, [selectedCategory, searchQuery, sortBy, storeProducts]);
 
   const currentCategoryObj = CATEGORIES.find(c => c.id === selectedCategory) || CATEGORIES[0];
   const totalCartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   if (viewMode === 'admin') {
     return <AdminDashboard onSwitchToStore={() => setViewMode('store')} />;
+  }
+
+  if (viewMode === 'checkout') {
+    return (
+      <CheckoutPage
+        items={cart}
+        currentUser={currentUser}
+        discountAmount={discountAmount}
+        appliedPromo={appliedPromo}
+        onApplyPromo={handleApplyPromo}
+        onRemovePromo={handleRemovePromo}
+        onBackToStore={() => {
+          setViewMode('store');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOrderSuccess={handleOrderSuccess}
+        onClearCart={handleClearCart}
+      />
+    );
+  }
+
+  if (viewMode === 'order-confirmation' && confirmedOrder) {
+    return (
+      <>
+        <OrderConfirmationPage
+          order={confirmedOrder}
+          onBackToStore={() => {
+            setViewMode('store');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onTrackOrder={(orderId) => {
+            setSelectedTrackOrderId(orderId);
+            setIsOrderTrackingOpen(true);
+          }}
+        />
+        <OrderTrackingModal
+          isOpen={isOrderTrackingOpen}
+          onClose={() => setIsOrderTrackingOpen(false)}
+          recentOrders={[...recentOrders, ...liveOrders]}
+          initialTrackingId={selectedTrackOrderId}
+        />
+      </>
+    );
   }
 
   if (viewMode === 'profile' && currentUser) {
@@ -434,7 +517,7 @@ export default function App() {
 
           {/* Flash Deals / Hot Offers */}
           <FlashDeals
-            products={PRODUCTS}
+            products={storeProducts}
             onQuickView={(p) => setQuickViewProduct(p)}
             onAddToCart={(p, w) => handleAddToCart(p, w)}
             onQuickOrder={(p, w) => handleQuickOrder(p, w)}
@@ -598,7 +681,10 @@ export default function App() {
         product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
         onAddToCart={(p, w, q) => handleAddToCart(p, w, q)}
-        onQuickOrder={(p, w, q) => handleQuickOrder(p, w, q)}
+        onQuickOrder={(p, w, q) => {
+          setQuickViewProduct(null);
+          handleQuickOrder(p, w, q);
+        }}
         isWishlisted={quickViewProduct ? wishlist.includes(quickViewProduct.id) : false}
         onToggleWishlist={handleToggleWishlist}
       />
@@ -609,28 +695,21 @@ export default function App() {
         items={cart}
         onUpdateQuantity={handleUpdateCartQuantity}
         onRemoveItem={handleRemoveCartItem}
-        onProceedToCheckout={() => setIsCheckoutOpen(true)}
+        onProceedToCheckout={() => {
+          setIsCartOpen(false);
+          setViewMode('checkout');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
         appliedPromo={appliedPromo}
         discountAmount={discountAmount}
         onApplyPromo={handleApplyPromo}
         onRemovePromo={handleRemovePromo}
       />
 
-      <CheckoutModal
-        isOpen={isCheckoutOpen}
-        onClose={() => setIsCheckoutOpen(false)}
-        items={cart}
-        discountAmount={discountAmount}
-        currentUser={currentUser}
-        onOpenAuth={() => setIsAuthOpen(true)}
-        onOrderSuccess={handleOrderSuccess}
-        onClearCart={handleClearCart}
-      />
-
       <OrderTrackingModal
         isOpen={isOrderTrackingOpen}
         onClose={() => setIsOrderTrackingOpen(false)}
-        recentOrders={recentOrders}
+        recentOrders={[...recentOrders, ...liveOrders]}
         initialTrackingId={selectedTrackOrderId}
       />
 
@@ -638,9 +717,12 @@ export default function App() {
         isOpen={isWishlistOpen}
         onClose={() => setIsWishlistOpen(false)}
         wishlistIds={wishlist}
-        products={PRODUCTS}
+        products={storeProducts}
         onToggleWishlist={handleToggleWishlist}
-        onQuickOrder={(p, w) => handleQuickOrder(p, w)}
+        onQuickOrder={(p, w) => {
+          setIsWishlistOpen(false);
+          handleQuickOrder(p, w);
+        }}
         onAddToCart={(p, w) => handleAddToCart(p, w)}
       />
 

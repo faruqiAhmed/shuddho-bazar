@@ -16,6 +16,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { AdminTab } from '../../types';
+import { useAdminLanguage } from '../../context/AdminLanguageContext';
 
 interface AdminSidebarProps {
   currentTab: AdminTab;
@@ -32,6 +33,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   onCloseMobile,
   onSwitchToStore,
 }) => {
+  const { isBn, tr, formatNumber } = useAdminLanguage();
+
   const navItems = [
     { id: 'dashboard' as AdminTab, label: 'Dashboard', bengaliLabel: 'ড্যাশবোর্ড', icon: LayoutDashboard },
     { id: 'orders' as AdminTab, label: 'Orders', bengaliLabel: 'অর্ডার সমূহ', icon: ShoppingBag, badge: 12 },
@@ -76,7 +79,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                   Shuddho <span className="text-emerald-700">Bazar</span>
                 </h1>
                 <p className="text-[11px] text-stone-400 font-medium mt-0.5">
-                  শুদ্ধ খাবার, সুস্থ জীবন
+                  {tr('শুদ্ধ খাবার, সুস্থ জীবন', 'Pure Food, Healthy Life')}
                 </p>
               </div>
             </div>
@@ -84,7 +87,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             {/* Mobile Close Button */}
             <button 
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 text-stone-400 hover:text-stone-700 rounded-lg"
+              className="lg:hidden p-1.5 text-stone-400 hover:text-stone-700 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -111,12 +114,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 >
                   <div className="flex items-center gap-3">
                     <Icon className={`w-4 h-4 ${isActive ? 'text-[#166534]' : 'text-stone-400'}`} />
-                    <span>{item.label}</span>
+                    <span>{isBn ? item.bengaliLabel : item.label}</span>
                   </div>
 
                   {item.badge && (
                     <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center">
-                      {item.badge}
+                      {formatNumber(item.badge)}
                     </span>
                   )}
                 </button>
@@ -134,7 +137,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           >
             <div className="flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
-              <span>গ্রাহক স্টোর দেখুন (Store)</span>
+              <span>{tr('গ্রাহক স্টোর দেখুন', 'View Storefront')}</span>
             </div>
             <ExternalLink className="w-3.5 h-3.5 text-emerald-700" />
           </button>
@@ -145,10 +148,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               🥗
             </div>
             <p className="font-display font-extrabold text-xs text-emerald-950">
-              Fresh & Healthy
+              {tr('তাজা ও স্বাস্থ্যকর', 'Fresh & Healthy')}
             </p>
             <p className="text-[10px] font-semibold text-emerald-700 mt-0.5">
-              Good Food, Better Life
+              {tr('সুস্থ খাবার, সুন্দর জীবন', 'Good Food, Better Life')}
             </p>
             <div className="w-3 h-3 text-emerald-600 mx-auto mt-1">
               <svg viewBox="0 0 24 24" fill="currentColor">

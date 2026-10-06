@@ -251,27 +251,20 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* Cart Trigger with Price Badge */}
+            {/* Cart Trigger (Only Icon, No Text) */}
             <button
               id="header-cart-btn"
               onClick={onOpenCart}
-              className="flex items-center gap-2 pl-2 sm:pl-3 pr-2.5 sm:pr-3.5 py-1.5 sm:py-2 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full shadow-xs transition-transform active:scale-95 cursor-pointer"
+              className="relative p-2 sm:p-2.5 bg-emerald-800 hover:bg-emerald-900 text-white rounded-full shadow-xs transition-transform active:scale-95 cursor-pointer flex items-center justify-center"
               aria-label="Shopping Cart"
+              title="Shopping Cart"
             >
-              <div className="relative">
-                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 bg-amber-400 text-emerald-950 text-[10px] font-extrabold rounded-full flex items-center justify-center ring-2 ring-emerald-800">
-                    {cartCount}
-                  </span>
-                )}
-              </div>
-              <div className="hidden sm:flex flex-col text-left leading-none">
-                <span className="text-[10px] text-emerald-200 font-medium">আপনার কার্ট</span>
-                <span className="text-xs font-bold text-white mt-0.5">
-                  {cartCount} {cartCount === 1 ? 'item' : 'items'}
+              <ShoppingBag className="w-5 h-5 text-amber-300" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-amber-400 text-emerald-950 text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-emerald-800 leading-none">
+                  {cartCount}
                 </span>
-              </div>
+              )}
             </button>
           </div>
         </div>
